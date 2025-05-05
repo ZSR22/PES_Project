@@ -46,3 +46,33 @@ Nodo* inserisci_cliente(Nodo* radice, Cliente c) {
     }
     return radice;
 }
+
+int abbonamento_valido(Cliente c) {
+    time_t ora = time(NULL); // ottiene l'ora corrente
+    int giorni_passati = difftime(ora, c.data_inizio)/ (60 * 60 * 24);// calcola i giorni passati dall'inizio dell'abbonamento con la differenza di tempo e la conversione in giorni
+    if (giorni_passati < 0) {
+        fprintf(stderr, "Data di inizio non valida\n");
+        return 0;
+    }
+    return giorni_passati <= c.durata; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
+}
+
+void stampa_clienti_ordinati(Nodo* radice) {
+    if (radice != NULL) {
+        stampa_clienti_ordinati(radice->sx);
+        printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n", radice->cliente.nome, radice->cliente.cognome, radice->cliente.id_abbonamento, abbonamento_valido(radice->cliente) ? "SI" : "NO");
+        stampa_clienti_ordinati(radice->dx);
+    }else {
+        fprintf(stderr, "Nessun cliente trovato\n");
+    }
+    return;
+}
+
+void libera_clienti(Nodo* radice) {
+    if (radice != NULL) {
+        libera_clienti(radice->sx);
+        libera_clienti(radice->dx);
+        free(radice);
+    }
+    return;
+}
