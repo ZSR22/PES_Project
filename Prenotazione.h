@@ -2,12 +2,12 @@
 #define PRENOTAZIONE_H
 #define LUNGHEZZA_MASSIMA 50
 #include <time.h>
+#include "Lezioni.h"
 typedef struct{
     unsigned int ID;
-    char nome_lezione[LUNGHEZZA_MASSIMA];
+    Lezione lezione;
     char nome_partecipante[LUNGHEZZA_MASSIMA];
     char cognome_partecipante[LUNGHEZZA_MASSIMA];
-    time_t orario;
 } Prenotazione;
 
 void visualizza_prenotazione(const Prenotazione prenotazione);
