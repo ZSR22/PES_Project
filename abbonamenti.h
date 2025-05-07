@@ -1,11 +1,17 @@
-<<<<<<< HEAD
 //abbonamenti.h
+#include <time.h>
 
-typedef struct Cliente {} Cliente;
-typedef struct nodo {} Nodo;
 
-=======
->>>>>>> 1947f2939e37c1581e588b554d42d4d9e9668346
+typedef struct {
+    char nome[20];
+    char cognome[20];
+    char codice_fiscale[16];
+    char data_nascita[11];
+    int durata; // la durata dell'abbonamento in giorni percio la facciamo con l' intero
+    time_t data_inizio; // la data di inizio dell'abbonamento
+    unsigned int id_abbonamento; // il numero dell'abbonamento
+    } Cliente;
+
 Nodo* inserisci_cliente();
 Cliente* cerca_cliente();
 int abbonamento_valido();
