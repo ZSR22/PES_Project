@@ -1,4 +1,10 @@
-//abbonamenti.h
+/*
+    File: abbonamenti.h
+    Descrizione: File di intestazione per la gestione degli abbonamenti
+    Autore: Salvatore Zurino
+    Data: 14/05/2025
+    Versione: 1.1
+ */
 #include <time.h>
 
 
