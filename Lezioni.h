@@ -1,9 +1,22 @@
+/*
+=============================================================================
+ File: Lezioni.h
+ Descrizione: Definizioni di strutture e prototipi per la gestione delle lezioni
+ Autore: Gianmarco Raimondi
+ Data: 06/05/2025
+ Versione: 1.0
+=============================================================================
+*/
 #ifndef LEZIONI_H
 #define LEZIONI_H
 #include <time.h>
-
+#include <stdio.h>
+#include <stdbool.h>
+#include "Utilities.h"
 #define MAX_NOME 50
-#define MAX_LEZIONI 100
+#define  CAPACITÀ_INIZIALE 4
+
+// Struttura rappresentante una singola lezione
 typedef struct{
     unsigned int ID;
     char nome[MAX_NOME];
@@ -11,13 +24,16 @@ typedef struct{
     time_t data;
 } Lezione;
 
+// Struttura rapprensentante un catalogo dinamico di lezioni
 typedef struct{
-    Lezione lezione[MAX_LEZIONI];
+    Lezione* lezione;
     int numero_lezioni;
+    size_t capacità; // dimensione allocata dell'array
 } Catalogo_Lezioni;
 
 void inizializza_catalogo(Catalogo_Lezioni* catalogo);
-void aggiungi_lezione(Catalogo_Lezioni* catalogo, Lezione nuova_lezione);
+void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione);
+void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_eliminare);
 void mostra_lezioni(const Catalogo_Lezioni* catalogo);
-const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id, const char* nome);
+const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, Lezione lezione);
 #endif
