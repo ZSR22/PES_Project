@@ -10,6 +10,9 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 #include <time.h>
+
 typedef struct tm Orario_Tm;
+
 Orario_Tm* converti_orario(time_t orario);
+
 #endif
