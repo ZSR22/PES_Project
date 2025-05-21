@@ -1,10 +1,11 @@
 /*
+=====================================================
     File: abbonamenti.c
     Descrizione: Funzioni per la gestione degli abbonamenti
     Autore: Salvatore Zurino
     Data: 14/05/2025
     Versione: 1.2
-
+=======================================================
 */
 
 #include "abbonamenti.h"
@@ -13,11 +14,6 @@
 #include <string.h>
 
 //Creazione di un albero binario di ricerca per la memorizzazione dei clienti
-typedef struct nodo {
-    Cliente cliente;
-    struct nodo* sx;
-    struct nodo* dx;
-} Nodo;
 
 /*
 Funzione crea_nodo
@@ -43,7 +39,7 @@ Nodo* crea_nodo(Cliente c) {
     nuovo->cliente = c;
     nuovo->sx = NULL;
     nuovo->dx = NULL;
-    fprintf("Cliente %s %s è stato salvato con successo\n", c.nome, c.cognome);
+    printf("Cliente %s %s è stato salvato con successo\n", c.nome, c.cognome);
     return nuovo;
 }
 
@@ -175,4 +171,76 @@ void libera_clienti(Nodo* radice) {
         free(radice);
     }
     return;
+}
+/*
+Funzione ricerca_cliente
+----------------
+    ricerca un cliente nell' albero binario di ricerca
+    se l' albero è vuoto restituisce NULL
+    se il cliente è trovato restituisce il nodo del cliente
+    se il cliente non è trovato restituisce NULL
+    se non è stato possibile allocare memoria restituisce NULL
+Parametri:
+    Radice albero binario
+    codice_fiscale codice fiscale del cliente da cercare
+Precondizione:
+    la radice dell'albero binario non deve essere NULL
+    l' albero binario deve essere stato creato
+    l' albero binario deve essere stato popolato
+
+Post condizione:
+    restituisce il nodo del cliente se trovato
+    restituisce NULL se non è stato possibile allocare memoria
+    restituisce NULL se il cliente non è trovato
+    restituisce NULL se l' albero è vuoto
+    la funzione non modifica l' albero binario
+*/
+Nodo* ricerca_cliente(Nodo* radice, const char* codice_fiscale) {
+    if (!radice) return NULL;
+    int cmp = strcmp(codice_fiscale, radice->cliente.codice_fiscale);
+    if (cmp == 0) return radice;
+    else if (cmp < 0) return ricerca_cliente(radice->sx, codice_fiscale);
+    else return ricerca_cliente(radice->dx, codice_fiscale);
+}
+
+/*
+Funzione ricerca_e_verifica_cliente
+----------------
+    ricerca un cliente nell' albero binario di ricerca
+    se l' albero è vuoto restituisce NULL
+    se il cliente è trovato restituisce il nodo del cliente
+    se il cliente non è trovato restituisce NULL
+    se non è stato possibile allocare memoria restituisce NULL
+    stampa i dati del cliente e se l' abbonamento è valido o meno
+Parametri:
+    Radice albero binario
+    codice_fiscale codice fiscale del cliente da cercare
+    nome nome del cliente
+    cognome cognome del cliente
+    id_abbonamento id abbonamento del cliente
+Precondizione:
+    la radice dell'albero binario non deve essere NULL
+    l' albero binario deve essere stato creato
+    l' albero binario deve essere stato popolato
+    il codice fiscale del cliente deve essere univoco
+    
+Post condizione:
+    restituisce il nodo del cliente se trovato
+    restituisce NULL se non è stato possibile allocare memoria
+    restituisce NULL se il cliente non è trovato
+    restituisce NULL se l' albero è vuoto
+    la funzione non modifica l' albero binario
+    
+*/
+void ricerca_e_verifica_cliente(Nodo* radice, const char* codice_fiscale) {
+    Nodo* trovato = ricerca_cliente(radice, codice_fiscale);
+    if (trovato) {
+        printf("Nome: %s\nCognome: %s\nCodice Fiscale: %s\nValido: %s\n",
+               trovato->cliente.nome,
+               trovato->cliente.cognome,
+               trovato->cliente.codice_fiscale,
+               abbonamento_valido(trovato->cliente) ? "SI" : "NO");
+    } else {
+        printf("Cliente non trovato\n");
+    }
 }
