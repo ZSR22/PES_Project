@@ -16,6 +16,7 @@
 #include <string.h>
 #include "Lezioni.h"
 #include "Utilities.h"
+// Struttura rappresentante una singola prenotazione
 typedef struct{
     unsigned int ID;
     Lezione lezione;

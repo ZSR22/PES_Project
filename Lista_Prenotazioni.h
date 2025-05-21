@@ -20,7 +20,7 @@ typedef struct{
 typedef Nodo* Lista_Prenotazioni;
 
 Lista_Prenotazioni crea_lista_prenotazioni();
-void aggiungi_Prenotazione(Lista_Prenotazioni* lista, Prenotazione prenotazione);
+void aggiungi_Prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione);
 bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione);
 void visualizza_prenotazioni(const Lista_Prenotazioni lista);
 void libera_lista_prenotazioni(Lista_Prenotazioni* lista);

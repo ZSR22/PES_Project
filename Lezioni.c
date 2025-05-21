@@ -13,16 +13,16 @@
 Catalogo_Lezioni catalogo;
 
 /*
-  inizializza_catalogo
+  
 
   Inizializza un array dinamico di strutture Lezione con capacità iniziale(4)
 
-  -Parametri:
-    Catalogo_Lezioni* catalogo
+  
+   @param Catalogo_Lezioni* catalogo
 
   -Pre: catalogo != NULL
 
-  -Post: catalogo->lezione allocato, numero_lezioni = 0, capacity = CAPACITÀ_INIZIALE
+  @result catalogo->lezione allocato, numero_lezioni = 0, capacity = CAPACITÀ_INIZIALE
  */
 void inizializza_catalogo(Catalogo_Lezioni* catalogo){
     
@@ -33,16 +33,17 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
 }
 
 /*
-  aggiungi_lezione
   
-  Aggiunge una lezione al catalogo, ridimensionando se necessario tramite il metodo del raddoppio esponenziale
   
-  -Parametri:
-    Catalogo_Lezioni* catalogo, const Lezione nuova_lezione
+  Aggiunge una lezione al catalogo, ridimensionando se necessario tramite raddoppio esponenziale
+  
+  
+  @param Catalogo_Lezioni* catalogo
+  @param Lezione nuova_lezione
 
   -Pre: catalogo != NULL, catalogo->lezione allocato
 
-  -Post: lezione inserita in coda, size incrementato, capacity raddoppiata se necessario
+  @result lezione inserita in coda, size incrementato, capacity raddoppiata se necessario
  */
 void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione){
     
@@ -64,16 +65,17 @@ void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione){
 }
 
 /*
-  elimina_lezione
   
-  Rimuove una lezione dal catalogo dato il suo ID e la data, riducendo memoria se opportuno tramite dimezzamento
   
-  -Parametri:
-    Catalogo_Lezioni* catalogo, const Lezione lezione_da_eliminare
+  Rimuove una lezione dal catalogo, cercata usando ID e data, se opportuno ridimensiona la memoria tramite dimezzamento
+  
+  
+   @param Catalogo_Lezioni* catalogo
+   @param Lezione lezione_da_eliminare
 
   -Pre: catalogo != NULL, catalogo->lezione != NULL, numero_lezioni > 0
   
-  -Post: catalogo aggiornato, size decrementato, memory ridotta se size < capacity/4
+  @result catalogo aggiornato, size decrementato, memoria ridotta se size < capacity/4
  */
 void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_eliminare){
 
@@ -120,22 +122,28 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
 }
 
 /*
-  visualizza_lezioni
+  
 
   Stampa a video tutte le lezioni presenti nel catalogo
 
-  -Parametri:
-    const Catalogo_Lezioni catalogo
+  
+    @param Catalogo_Lezioni catalogo
 
   -Pre: catalogo valido
 
-  -Post: per ogni lezione vengono mostrati ID, lezione, numero di posti e data, se il catalogo è vuoto stamperà un messaggio di errore
+  @result per ogni lezione vengono mostrati ID, lezione, numero di posti e data, se il catalogo è vuoto stamperà un messaggio di errore
  */
 void mostra_lezioni(const Catalogo_Lezioni catalogo){
     
+    if(&catalogo == NULL){
+        fprintf(stderr, "Catalogo Vuoto \n");
+        return;
+    }
+
     for(int i = 0; i < catalogo.numero_lezioni; i ++){
 
         Orario_Tm* data = converti_orario(catalogo.lezione[i].data);
+        
         printf("ID:%Ud\n, lezione:%s\n, numero di posti: %d\n, data:%02d/%02d/%04d--%02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
         data->tm_mday,
         data->tm_mon,
@@ -147,16 +155,17 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
     }
 }
 /*
-  trova_lezione
+  
   
   Cerca una lezione tramite ID e data e restituisce un puntatore alla struttura
   
-  -Parametri:
-    const Catalogo_Lezioni* catalogo, const Lezione lezione
+  
+   @param Catalogo_Lezioni* catalogo
+   @param Lezione lezione
 
   -Pre: catalogo != NULL 
   
-  -Post: restituisce un puntatore alla lezione se trovata, altrimenti NULL se la lezione non è presente nel catalogo
+  @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */
 const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const Lezione lezione){
 

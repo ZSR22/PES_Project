@@ -34,6 +34,6 @@ typedef struct{
 void inizializza_catalogo(Catalogo_Lezioni* catalogo);
 void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione);
 void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_eliminare);
-void mostra_lezioni(const Catalogo_Lezioni* catalogo);
+void mostra_lezioni(const Catalogo_Lezioni catalogo);
 const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, Lezione lezione);
 #endif
