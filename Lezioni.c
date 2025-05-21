@@ -159,7 +159,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
 /*
   
   
-  Cerca una lezione tramite ID e data e restituisce un puntatore alla struttura
+  Cerca una lezione confrontando ID e data della lezione e restituisce un puntatore alla struttura
   
   
    @param Catalogo_Lezioni* catalogo

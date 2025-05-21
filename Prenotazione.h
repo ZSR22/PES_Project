@@ -16,12 +16,12 @@
 #include <string.h>
 #include "Lezioni.h"
 #include "Utilities.h"
+#include "abbonamenti.h"
 // Struttura rappresentante una singola prenotazione
 typedef struct{
     unsigned int ID;
     Lezione lezione;
-    char nome_partecipante[LUNGHEZZA_MASSIMA];
-    char cognome_partecipante[LUNGHEZZA_MASSIMA];
+    Cliente partecipante;
 } Prenotazione;
 
 void visualizza_prenotazione(const Prenotazione prenotazione);

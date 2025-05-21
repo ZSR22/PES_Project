@@ -24,7 +24,7 @@ void visualizza_prenotazione(Prenotazione prenotazione){
     Orario_Tm* data = converti_orario(prenotazione.lezione.data);
     
     printf("ID: %ud\n nome: %s\n Cognome: %s\n Lezione: %s\n Data e Ora: %02d/%02d/%04d--%02d:%02d\n", 
-        prenotazione.ID, prenotazione.nome_partecipante, prenotazione.cognome_partecipante, prenotazione.lezione.nome, 
+        prenotazione.ID, prenotazione.partecipante.nome, prenotazione.partecipante.cognome, prenotazione.lezione.nome, 
             data->tm_mday,
             data->tm_mon,
             data->tm_year,

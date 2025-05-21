@@ -44,7 +44,7 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
     }
 
     
-    if(controllo_conflitto_orario(*lista, prenotazione.lezione, prenotazione.nome_partecipante, prenotazione.cognome_partecipante)){
+    if(controllo_conflitto_orario(*lista, prenotazione.lezione, prenotazione.partecipante)){
         fprintf(stderr, "Utente già prenotato.\n");
         return;
     } 
@@ -145,7 +145,7 @@ void visualizza_prenotazioni(const Lista_Prenotazioni lista){
     while (nodo_corrente != NULL)
     {
         visualizza_prenotazione(nodo_corrente->prenotazione);
-        nodo_corrente = lista->next;
+        nodo_corrente = nodo_corrente->next;
     }
     
 }
@@ -251,24 +251,70 @@ bool lezione_piena(const Lista_Prenotazioni lista, const Lezione lezione_da_anal
 
   @return True se esiste un conflitto, altrimenti False
  */
-bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione lezione, const char* nome, const char* cognome){
+bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
 
     
     Nodo* nodo_corrente = lista;
     while(nodo_corrente != NULL){
         
         
-        if(lista->prenotazione.lezione.data == lezione.data){
+        if(nodo_corrente->prenotazione.lezione.data == lezione.data){
             
             
-            if(strcmp(lista->prenotazione.nome_partecipante, nome) == 0 && strcmp(lista->prenotazione.cognome_partecipante, cognome) == 0){
+            if(strcmp(nodo_corrente->prenotazione.partecipante.nome, partecipante.nome) == 0 && 
+            strcmp(nodo_corrente->prenotazione.partecipante.cognome, partecipante.cognome) == 0){
                 
                 return true; 
+            }
         }
+
 
         nodo_corrente = nodo_corrente->next; 
     }
 
     return false;
 
+}
+
+/*
+  
+
+  Cerca una prenotazione confrontando prima data e id lezione, poi nome e cognome del partecipante
+
+  
+    @param Lista_Prenotazioni* lista
+    @param Lezione lezione
+    @param Cliente partecipante
+
+  
+
+  @return ritorna un puntatore alla struttura Prenotazione cercata
+  se non è stata trovata restituisce NULL
+ */
+Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
+
+    if(lista == NULL || &lezione == NULL || &partecipante == NULL){return NULL;}
+       
+    
+    
+    Nodo* nodo_corrente = lista;
+
+    while (nodo_corrente != NULL)
+    {
+        if(nodo_corrente->prenotazione.lezione.data == lezione.data 
+            && nodo_corrente->prenotazione.lezione.ID == lezione.ID){
+
+            if(strcmp(nodo_corrente->prenotazione.partecipante.nome, partecipante.nome) == 0 
+            && strcmp(nodo_corrente->prenotazione.partecipante.cognome, partecipante.cognome)){
+                
+                return &nodo_corrente->prenotazione;
+            }
+            
+        }
+
+        nodo_corrente = nodo_corrente->next;
+    }
+
+    return NULL;
+    
 }
