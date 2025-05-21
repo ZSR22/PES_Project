@@ -75,7 +75,7 @@ void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione){
    @param Catalogo_Lezioni* catalogo
    @param Lezione lezione_da_eliminare
 
-  -Pre: catalogo != NULL, catalogo->lezione != NULL, numero_lezioni > 0
+  
   
   @result catalogo aggiornato, size decrementato, memoria ridotta se size < capacity/4
  */
@@ -131,7 +131,7 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
   
     @param Catalogo_Lezioni catalogo
 
-  -Pre: catalogo valido
+  
 
   @result per ogni lezione vengono mostrati ID, lezione, numero di posti e data, se il catalogo è vuoto stamperà un messaggio di errore
  */
@@ -165,7 +165,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
    @param Catalogo_Lezioni* catalogo
    @param Lezione lezione
 
-  -Pre: catalogo != NULL 
+   
   
   @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */

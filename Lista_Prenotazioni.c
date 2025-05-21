@@ -14,7 +14,7 @@
   
 Crea una nuova lista di prenotazioni vuota
 
-  -Pre: Nessuna
+  
 
   @return riporta una lista vuota
  */
@@ -129,7 +129,7 @@ bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione){
   
    @param Lista_Prenotazioni lista
 
-  -Pre: lista valida
+  
 
   @result per ogni prenotazione vengono mostrati ID, nome, cognome, lezione e data, se la lista è vuota stamperà un messaggio di errore
  */
@@ -184,7 +184,7 @@ void libera_lista_prenotazioni(Lista_Prenotazioni* lista){
     @param Lista_Prenotazioni* lista
     @param Lezione* lezione
 
-  -Pre: lista e lezione validi
+  
 
   @return ritorna la somma delle prenotazioni trovate
  */
@@ -244,8 +244,7 @@ bool lezione_piena(const Lista_Prenotazioni lista, const Lezione lezione_da_anal
   
     @param Lista_Prenotazioni lista
     @param Lezione lezione
-    @param char* nome
-    @param char* cognome
+    @param Cliente partecipante
 
   -Pre: lista valida, lezione con data definita, nome e cognome non nulli
 
