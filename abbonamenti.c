@@ -149,7 +149,7 @@ void stampa_clienti_ordinati(Nodo* radice) {
     return;
 }
 /*
-Funzione stampa_clienti_ordinati
+Funzione libera_clienti
 ----------------
     libera la memoria allocata per l' albero binario
     se l' albero è vuoto stampa un errore  
