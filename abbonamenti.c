@@ -29,8 +29,8 @@ Precondizione:
 Post condizione:
     ritorna il nodo creato
 */
-Nodo* crea_nodo(Cliente c) {
-    Nodo* nuovo = (Nodo*)malloc(sizeof(Nodo));
+NodoAlbero* crea_nodo(Cliente c) {
+NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     // controlla se l' allocazione è avvenuta con successo
     if (nuovo == NULL) {
         fprintf(stderr, "Errore di allocazione memoria\n");
@@ -68,9 +68,9 @@ Post condizione:
     se l' albero non è vuoto inserisce il cliente in modo ordinato
     in base al codice fiscale
 */
-Nodo* inserisci_cliente(Nodo* radice, Cliente c) {
+NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
     if (radice == NULL) {
-        Nodo* nuovo = crea_nodo(c);
+        NodoAlbero* nuovo = crea_nodo(c);
         return nuovo; 
     }
     /*
@@ -134,7 +134,7 @@ Post condizione:
     nessuna la funzione non modifica l' albero binario
 */
 
-void stampa_clienti_ordinati(Nodo* radice) {
+void stampa_clienti_ordinati(NodoAlbero* radice) {
     if (radice != NULL) {
         stampa_clienti_ordinati(radice->sx);
         printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n", radice->cliente.nome, radice->cliente.cognome, radice->cliente.id_abbonamento, abbonamento_valido(radice->cliente) ? "SI" : "NO");
@@ -164,7 +164,7 @@ Post condizione:
     la funzione non restituisce nulla
 
 */
-void libera_clienti(Nodo* radice) {
+void libera_clienti(NodoAlbero* radice) {
     if (radice != NULL) {
         libera_clienti(radice->sx);
         libera_clienti(radice->dx);
@@ -195,7 +195,7 @@ Post condizione:
     restituisce NULL se l' albero è vuoto
     la funzione non modifica l' albero binario
 */
-Nodo* ricerca_cliente(Nodo* radice, const char* codice_fiscale) {
+NodoAlbero* ricerca_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     if (!radice) return NULL;
     int cmp = strcmp(codice_fiscale, radice->cliente.codice_fiscale);
     if (cmp == 0) return radice;
@@ -232,8 +232,8 @@ Post condizione:
     la funzione non modifica l' albero binario
     
 */
-void ricerca_e_verifica_cliente(Nodo* radice, const char* codice_fiscale) {
-    Nodo* trovato = ricerca_cliente(radice, codice_fiscale);
+void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) {
+    NodoAlbero* trovato = ricerca_cliente(radice, codice_fiscale);
     if (trovato) {
         printf("Nome: %s\nCognome: %s\nCodice Fiscale: %s\nValido: %s\n",
                trovato->cliente.nome,

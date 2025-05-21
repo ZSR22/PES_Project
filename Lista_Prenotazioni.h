@@ -10,17 +10,18 @@
 
 #ifndef LISTA_PRENOTAZIONI_H
 #define LISTA_PRENOTAZIONI_H
+#include <stdbool.h>
 #include "Prenotazione.h"
 // Struttura rappresentante un nodo della lista collegata
 typedef struct{
     Prenotazione prenotazione;
-    struct nodo* next;
-} Nodo;
+    struct nodo_prenotazione* next;
+} NodoPrenotazione;
 
-typedef Nodo* Lista_Prenotazioni;
+typedef NodoPrenotazione* Lista_Prenotazioni;
 
 Lista_Prenotazioni crea_lista_prenotazioni();
-void aggiungi_Prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione);
+void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione);
 bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione);
 void visualizza_prenotazioni(const Lista_Prenotazioni lista);
 void libera_lista_prenotazioni(Lista_Prenotazioni* lista);

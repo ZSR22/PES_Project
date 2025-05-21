@@ -5,9 +5,21 @@
 #include "abbonamenti.h"
 #include "Prenotazione.h"
 
+
+/*
+ * ALL'AVVIO:
+ * - Controllare esistenza di file JSON (lezioni.json, prenotazioni.json)
+ * - Se esistono: caricare i dati e popolare le strutture dati
+ * - Se non esistono: crearli vuoti
+ *
+ * DURANTE L'ESECUZIONE:
+ * - Ogni modifica alle strutture dati deve aggiornare il file JSON corrispondente
+ */
+
+
 #define MAX_PRENOTAZIONI 100
 
-Nodo* radice = NULL;
+NodoAlbero* radice = NULL;
 Prenotazione prenotazioni[MAX_PRENOTAZIONI];
 int num_prenotazioni = 0;
 
@@ -24,7 +36,7 @@ void menu(){
 }
 
 int main(){
-  Nodo* radice = NULL;
+  NodoAlbero* radice = NULL;
   int scelta;
   char codice_fiscale[17];
   Cliente c;
@@ -66,7 +78,7 @@ int main(){
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
 
-        Nodo* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
+        NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
         if (nodo_trovato != NULL) {
           Cliente* trovato = &(nodo_trovato->cliente);
           printf("Cliente trovato: %s %s\n", trovato->nome, trovato->cognome);

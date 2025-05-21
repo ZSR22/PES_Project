@@ -22,17 +22,17 @@ typedef struct {
     time_t data_inizio; // la data di inizio dell'abbonamento
     unsigned int id_abbonamento; // il numero dell'abbonamento
     } Cliente;
-typedef struct Nodo {
+typedef struct {
     Cliente cliente;
-    struct Nodo* sx;
-    struct Nodo* dx;
-} Nodo;
+    struct nodo_albero* sx;
+    struct nodo_albero* dx;
+} NodoAlbero;
 
-Nodo* inserisci_cliente(Nodo* radice, Cliente c);
+NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c);
 int abbonamento_valido(Cliente c);
-void stampa_clienti_ordinati(Nodo* radice);
-void libera_clienti(Nodo* radice);
-Nodo* ricerca_cliente(Nodo* radice, const char* codice_fiscale);
-void ricerca_e_verifica_cliente(Nodo* radice, const char* codice_fiscale);
+void stampa_clienti_ordinati(NodoAlbero* radice);
+void libera_clienti(NodoAlbero* radice);
+NodoAlbero* ricerca_cliente(NodoAlbero* radice, const char* codice_fiscale);
+void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale);
 
 #endif

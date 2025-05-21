@@ -7,6 +7,8 @@
  Versione: 1.0
 =============================================================================
 */
+#include <time.h>
+#include <stdio.h>
 #include "Prenotazione.h"
 /*
 

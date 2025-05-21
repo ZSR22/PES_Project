@@ -7,7 +7,10 @@
  Versione: 1.0
 =============================================================================
 */
-
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 #include  "Lezioni.h"
 
 

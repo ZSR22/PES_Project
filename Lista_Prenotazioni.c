@@ -8,6 +8,9 @@
 =============================================================================
 */
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "Lista_Prenotazioni.h"
 
 /*
@@ -50,7 +53,7 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
     } 
 
     
-    Nodo* nuovo_nodo = (Nodo*)malloc(sizeof(Nodo));
+    NodoPrenotazione* nuovo_nodo = (NodoPrenotazione*)malloc(sizeof(NodoPrenotazione));
     if(nuovo_nodo == NULL){
         fprintf(stderr, "Errore di allocazione memoria!!\n");
         return;
@@ -64,7 +67,7 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
     if(lista == NULL){
         *lista = nuovo_nodo;
     } else{
-        Nodo* nodo_corrente = *lista;
+        NodoPrenotazione* nodo_corrente = *lista;
         while (nodo_corrente->next != NULL) 
         {
             nodo_corrente = nodo_corrente->next; 
@@ -94,8 +97,8 @@ bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione){
         fprintf(stderr, "Lezione non valida o lista prenotazioni vuota\n");
         return false; 
     }    
-    Nodo* nodo_corrente = *lista;
-    Nodo* nodo_precedente = NULL;
+    NodoPrenotazione* nodo_corrente = *lista;
+    NodoPrenotazione* nodo_precedente = NULL;
     
    
     while(nodo_corrente != NULL){
@@ -140,7 +143,7 @@ void visualizza_prenotazioni(const Lista_Prenotazioni lista){
         return;
     }
     
-    Nodo* nodo_corrente = lista;
+    NodoPrenotazione* nodo_corrente = lista;
     
     while (nodo_corrente != NULL)
     {
@@ -164,7 +167,7 @@ void visualizza_prenotazioni(const Lista_Prenotazioni lista){
  */
 void libera_lista_prenotazioni(Lista_Prenotazioni* lista){
     
-    Nodo* nodo_corrente;
+    NodoPrenotazione* nodo_corrente;
     
     
     while(*lista != NULL){
@@ -198,7 +201,7 @@ int conteggia_prenotazioni( const Lista_Prenotazioni* lista, const Lezione* lezi
 
     
     int conteggio = 0; 
-    Nodo* corrente = *lista;
+    NodoPrenotazione* corrente = *lista;
 
     
     while (corrente != NULL) {
@@ -253,7 +256,7 @@ bool lezione_piena(const Lista_Prenotazioni lista, const Lezione lezione_da_anal
 bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
 
     
-    Nodo* nodo_corrente = lista;
+    NodoPrenotazione* nodo_corrente = lista;
     while(nodo_corrente != NULL){
         
         
@@ -294,9 +297,7 @@ Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione l
 
     if(lista == NULL || &lezione == NULL || &partecipante == NULL){return NULL;}
        
-    
-    
-    Nodo* nodo_corrente = lista;
+    NodoPrenotazione* nodo_corrente = lista;
 
     while (nodo_corrente != NULL)
     {

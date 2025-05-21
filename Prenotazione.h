@@ -10,10 +10,7 @@
 #ifndef PRENOTAZIONE_H
 #define PRENOTAZIONE_H
 #define LUNGHEZZA_MASSIMA 50
-#include <time.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include "Lezioni.h"
 #include "Utilities.h"
 #include "abbonamenti.h"
