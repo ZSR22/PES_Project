@@ -9,8 +9,7 @@
 */
 
 #include  "Lezioni.h"
-#include <stdlib.h>
-#include <string.h>
+
 
 Catalogo_Lezioni catalogo;
 
