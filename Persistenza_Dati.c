@@ -276,7 +276,7 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
 
   @return true se il salvataggio è avvenuto con successo, false altrimenti
 */
-bool salva_catalogo_su_file(const Catalogo_Lezioni* catalogo, const char* filepath){
+bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepath){
 
     cJSON* root = cJSON_CreateArray();
 

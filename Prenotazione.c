@@ -23,7 +23,7 @@ Stampa a video la prenotazione passata come parametro
 void visualizza_prenotazione(Prenotazione prenotazione){
     
     //Convertire time_t in una struttura Tm è necessaria se si vuole visualizzare l'orario nel formato italiano ->  giorno/mese/anno ora:minuto
-    Orario_Tm* data = converti_orario(prenotazione.lezione.data);
+    Orario_Tm* data = converti_orario_in_struct_tm(prenotazione.lezione.data);
     
     printf("ID: %ud\n nome: %s\n Cognome: %s\n Lezione: %s\n Data e Ora: %02d/%02d/%04d--%02d:%02d\n", 
         prenotazione.ID, prenotazione.partecipante.nome, prenotazione.partecipante.cognome, prenotazione.lezione.nome, 

@@ -126,6 +126,28 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
 }
 
 /*
+
+  Libera tutta la memoria allocata per il catalogo lezioni
+
+  @param Catalogo_Lezioni* catalogo
+
+  -Pre: catalogo != NULL
+
+  @result catalogo->lezione liberato, numero_lezioni e capacità azzerati
+
+*/
+void elimina_catalogo(Catalogo_Lezioni *catalogo){
+
+    if(catalogo == NULL || catalogo->lezione == NULL) return;
+
+    free(catalogo->lezione);
+    catalogo->lezione = NULL;
+    catalogo->numero_lezioni = 0;
+    catalogo->capacità = 0;
+
+}
+
+/*
   
 
   Stampa a video tutte le lezioni presenti nel catalogo
@@ -146,7 +168,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
 
     for(int i = 0; i < catalogo.numero_lezioni; i ++){
 
-        Orario_Tm* data = converti_orario(catalogo.lezione[i].data);
+        Orario_Tm* data = converti_orario_in_struct_tm(catalogo.lezione[i].data);
         
         printf("ID:%u\n, lezione:%s\n, numero di posti: %d\n, data:%02d/%02d/%04d--%02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
         data->tm_mday,
@@ -161,7 +183,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
 /*
   
   
-  Cerca una lezione confrontando ID e data della lezione e restituisce un puntatore alla struttura
+  Cerca una lezione tramite ID e restituisce un puntatore alla struttura
   
   
    @param Catalogo_Lezioni* catalogo
@@ -171,18 +193,41 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
   
   @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */
-const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const Lezione lezione){
+const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id){
 
     if (catalogo == NULL || catalogo->lezione == NULL || catalogo->numero_lezioni == 0) {
         return NULL;
     }
 
     for(int i = 0; i < catalogo->numero_lezioni; i++){
-        if(catalogo->lezione[i].ID == lezione.ID && catalogo->lezione[i].data == lezione.data){
+        if(catalogo->lezione[i].ID == id){
         
             return &catalogo->lezione[i];
         }
     }
 
     return NULL;
+}
+
+/*
+
+  Verifica se esiste una lezione già pianificata nello stesso orario
+
+  @param Catalogo_Lezioni* catalogo
+  @param time_t orario -> orario da controllare
+
+  -Pre: catalogo != NULL
+
+  @return true se esiste almeno una lezione con lo stesso orario, false altrimenti
+
+*/
+bool conflitto_orario_lezione(const Catalogo_Lezioni* catalogo, time_t orario){
+    
+    for(int i = 0; i < catalogo->numero_lezioni; i++){
+        if(catalogo->lezione[i].data == orario){
+            return true;
+        }
+    }
+
+    return false;
 }

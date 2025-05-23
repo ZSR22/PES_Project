@@ -10,6 +10,7 @@
 #ifndef LEZIONI_H
 #define LEZIONI_H
 #include <time.h>
+#include <stdbool.h>
 #include "Utilities.h"
 #define MAX_NOME 50
 #define  CAPACITÀ_INIZIALE 4
@@ -32,6 +33,8 @@ typedef struct{
 void inizializza_catalogo(Catalogo_Lezioni* catalogo);
 void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione);
 void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_eliminare);
+void elimina_catalogo(Catalogo_Lezioni* catalogo);
 void mostra_lezioni(const Catalogo_Lezioni catalogo);
-const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, Lezione lezione);
+const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id);
+bool conflitto_orario_lezione(const Catalogo_Lezioni* catalogo, time_t orario);
 #endif
