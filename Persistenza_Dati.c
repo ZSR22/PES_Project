@@ -1,3 +1,12 @@
+/* 
+=============================================================================
+ File: Persistenza_Dati.c
+ Descrizione: Implementazione delle funzioni per il salvataggio e il caricamento di dati persistenti
+ Autore: Gianmarco Raimondi
+ Data: 21/05/2025
+ Versione: 1.0
+=============================================================================
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +29,7 @@ Catalogo_Lezioni carica_catalogo_da_file(const char* filepath){
     inizializza_catalogo(&catalogo);
 
     FILE* file = fopen(filepath, "r");
-    if(!file){return catalogo;}
+    if(!file){fprintf(stderr, "Errore apertura file lezioni.json\n"); return catalogo;}
 
     fseek(file, 0, SEEK_END);
     long int lunghezza = ftell(file);
@@ -87,7 +96,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
 
     FILE* file = fopen(filepath, "r");
     if (!file){
-        fprintf(stderr, "Errore apertura file!\n");
+        fprintf(stderr, "Errore apertura file prenotazioni.json\n");
         return;
     } 
 
@@ -120,14 +129,34 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
         
         if(cJSON_IsObject(struttura_cliente)){
             
-            cJSON* nome = cJSON_GetObjectItem(struttura_cliente, "nome");
-            cJSON* cognome = cJSON_GetObjectItem(struttura_cliente, "cognome");
+            cJSON* nome_p = cJSON_GetObjectItem(struttura_cliente, "nome");
+            cJSON* cognome_p = cJSON_GetObjectItem(struttura_cliente, "cognome");
+            cJSON* codice_fiscale_p = cJSON_GetObjectItem(item, "codice_fiscale");
+            cJSON* data_nascita_p = cJSON_GetObjectItem(item, "data_di_nascita");
+            cJSON* data_inizio_p = cJSON_GetObjectItem(item, "data_inizio_abbonamento");
+            cJSON* durata_p = cJSON_GetObjectItem(item, "durata");
+            cJSON* id_abbonamento_p = cJSON_GetObjectItem(item, "id_abbonamento");
 
-            if(cJSON_IsString(nome)){
-                strncpy(prenotazione.partecipante.nome, nome->valuestring, LUNGHEZZA_MASSIMA);
+            if(cJSON_IsString(nome_p)){
+                strncpy(prenotazione.partecipante.nome, nome_p->valuestring, LUNGHEZZA_MASSIMA);
             }
-            if(cJSON_IsString(cognome)){
-                strncpy(prenotazione.partecipante.cognome, cognome->valuestring, LUNGHEZZA_MASSIMA);
+            if(cJSON_IsString(cognome_p)){
+                strncpy(prenotazione.partecipante.cognome, cognome_p->valuestring, LUNGHEZZA_MASSIMA);
+            }
+            if(cJSON_IsString(codice_fiscale_p)){
+                strncpy(prenotazione.partecipante.codice_fiscale, codice_fiscale_p->valuestring, sizeof(prenotazione.partecipante.codice_fiscale));
+            }
+            if(cJSON_IsString(data_nascita_p)){
+                strncpy(prenotazione.partecipante.data_nascita, data_nascita_p->valuestring, sizeof(prenotazione.partecipante.data_nascita));
+            }
+            if(cJSON_IsNumber(data_inizio_p)){
+                prenotazione.partecipante.data_inizio = (time_t)cJSON_GetNumberValue(data_inizio_p);
+            }
+            if(cJSON_IsNumber(durata_p)){
+                prenotazione.partecipante.durata = (int)cJSON_GetNumberValue(durata_p);
+            }
+            if(cJSON_IsNumber(id_abbonamento_p)){
+                prenotazione.partecipante.id_abbonamento = (unsigned int)cJSON_GetNumberValue(id_abbonamento_p);
             }
         }
 
@@ -217,14 +246,6 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
         if(cJSON_IsString(data_nascita)){
             strncpy(cliente.data_nascita, data_nascita->valuestring, sizeof(cliente.data_nascita));
         }
-        
-        // Questa funzione andrebbe implementata ma va aggiunto un campo alla struttura Cliente
-        /*
-        if(cJSON_IsBool(validità_abbonamento)){
-            cliente.valido = cJSON_IsTrue(validità_abbonamento;)
-        }
-        */
-
        if(cJSON_IsNumber(data_inizio)){
             cliente.data_inizio = (time_t)cJSON_GetNumberValue(data_inizio);
        }
@@ -239,4 +260,173 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
     }
 
     cJSON_Delete(root);
+}
+
+//Funzioni di salvataggio
+
+
+/*
+
+  Salva il catalogo delle lezioni su file JSON
+
+  @param Catalogo_Lezioni* catalogo
+  @param char* filepath
+
+  -Pre: catalogo != NULL, filepath valido
+
+  @return true se il salvataggio è avvenuto con successo, false altrimenti
+*/
+bool salva_catalogo_su_file(const Catalogo_Lezioni* catalogo, const char* filepath){
+
+    cJSON* root = cJSON_CreateArray();
+
+    for(int i = 0; i < catalogo->numero_lezioni; i++){
+        Lezione lezione = catalogo->lezione[i];
+        cJSON* struttura_lezione = cJSON_CreateObject();
+
+        cJSON_AddNumberToObject(struttura_lezione, "ID", lezione.ID);
+        cJSON_AddStringToObject(struttura_lezione, "nome", lezione.nome);
+        cJSON_AddNumberToObject(struttura_lezione, "max_posti", lezione.max_posti);
+        cJSON_AddNumberToObject(struttura_lezione, "data", (double)lezione.data);
+
+        cJSON_AddItemToArray(root, struttura_lezione);
+    }
+
+    cJSON* stringa_json = cJSON_Print(root);
+    FILE* file = fopen(PATH_FILE_LEZIONI, "w");
+    if(!file){
+        cJSON_Delete(root);
+        free(stringa_json);
+        fprintf(stderr, "Errore apertura file lezioni.json\n");
+        return false;
+    }
+
+    fputs(stringa_json, file);
+    fclose(file);
+    free(stringa_json);
+    cJSON_Delete(root);
+    return true;
+}
+
+/*
+
+  Salva la lista delle prenotazioni su file JSON
+
+  @param Lista_Prenotazioni lista
+  @param char* filepath
+
+  -Pre: lista valida, filepath valido
+
+  @return true se il salvataggio è avvenuto con successo, false altrimenti
+*/
+bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* filepath){
+
+    cJSON* root = cJSON_CreateArray();
+
+    Lista_Prenotazioni lista_prenotazioni = lista;
+
+    while(lista_prenotazioni != NULL){
+        
+        cJSON* prenotazione_json = cJSON_CreateObject();
+        cJSON_AddNumberToObject(prenotazione_json, "ID", lista_prenotazioni->prenotazione.ID);
+        
+        cJSON* partecipante_json = cJSON_CreateObject();
+        cJSON_AddStringToObject(partecipante_json, "nome", lista_prenotazioni->prenotazione.partecipante.nome);
+        cJSON_AddStringToObject(partecipante_json, "cognome", lista_prenotazioni->prenotazione.partecipante.cognome);
+        cJSON_AddStringToObject(partecipante_json, "codice_fiscale", lista_prenotazioni->prenotazione.partecipante.codice_fiscale);
+        cJSON_AddStringToObject(partecipante_json, "data_nascita", lista_prenotazioni->prenotazione.partecipante.data_nascita);
+        cJSON_AddNumberToObject(partecipante_json, "durata", lista_prenotazioni->prenotazione.partecipante.durata);
+        cJSON_AddNumberToObject(partecipante_json, "data_inizio", (double)lista_prenotazioni->prenotazione.partecipante.data_inizio);
+        cJSON_AddNumberToObject(partecipante_json, "id_abbonamento", lista_prenotazioni->prenotazione.partecipante.id_abbonamento);
+
+        cJSON_AddItemToArray(root, prenotazione_json);
+
+        cJSON* lezione_json = cJSON_CreateObject();
+        cJSON_AddNumberToObject(lezione_json, "ID", lista_prenotazioni->prenotazione.lezione.ID);
+        cJSON_AddStringToObject(lezione_json, "nome", lista_prenotazioni->prenotazione.lezione.nome);
+        cJSON_AddNumberToObject(lezione_json, "max_posti", lista_prenotazioni->prenotazione.lezione.max_posti);
+        cJSON_AddNumberToObject(lezione_json, "data", (double)lista_prenotazioni->prenotazione.lezione.data);
+
+        cJSON_AddItemToArray(root, lezione_json);
+        
+        lista_prenotazioni = lista_prenotazioni->next;
+    }
+
+    cJSON* stringa_json = cJSON_Print(root);
+    FILE* file = fopen(PATH_FILE_PRENOTAZIONI, "w");
+    if(!file){
+        fprintf(stderr, "Errore apertura file prenotazioni.json\n");
+        cJSON_Delete(root);
+        free(stringa_json);
+        return false;
+    }
+
+    fputs(stringa_json, file);
+    fclose(file);
+    free(stringa_json);
+    cJSON_Delete(root);
+}
+
+/*
+
+  Salva l’albero degli abbonamenti su file JSON
+
+  @param NodoAlbero* nodo
+  @param char* filepath
+
+  -Pre: nodo valido o NULL, filepath valido
+
+  @return true se il salvataggio è avvenuto con successo, false altrimenti
+*/
+bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
+
+    cJSON* root = cJSON_CreateArray();
+
+    aggiung_clienti_array_json(nodo, root);
+
+    cJSON* stringa_json = cJSON_Print(root);
+    FILE* file = fopen(PATH_FILE_ABBONAMENTI, "w");
+    if(!file){
+        fprintf(stderr, "Errore apertura file clienti.json\n");
+        cJSON_Delete(root);
+        free(stringa_json);
+        return false;
+    }
+
+    fputs(stringa_json, file);
+    fclose(file);
+    free(stringa_json);
+    cJSON_Delete(root);
+}
+
+/*
+  
+  Inserisce ricorsivamente i clienti dell'albero nell'array JSON; la funzione ricorsiva visita in-order(simmetricamente) l'albero
+
+  @param NodoAlbero* nodo
+  @param cJSON* array_json
+
+  -Pre: array_json != NULL, nodo può essere NULL
+
+  @return I clienti vengono aggiunti all'array JSON.
+*/
+static void aggiung_clienti_array_json(const NodoAlbero* nodo, cJSON* array_json){
+
+    if(nodo == NULL){
+        return;
+    }
+    aggiung_clienti_array_json(nodo->sx, array_json);
+
+    cJSON* cliente_json =cJSON_CreateObject();
+    cJSON_AddStringToObject(cliente_json, "nome", nodo->cliente.nome);
+    cJSON_AddStringToObject(cliente_json, "cognome", nodo->cliente.cognome);
+    cJSON_AddStringToObject(cliente_json, "codice_fiscale", nodo->cliente.codice_fiscale);
+    cJSON_AddStringToObject(cliente_json, "data_nascita", nodo->cliente.data_nascita);
+    cJSON_AddNumberToObject(cliente_json, "data_inizio", (double)nodo->cliente.data_inizio);
+    cJSON_AddNumberToObject(cliente_json, "durata", nodo->cliente.durata);
+    cJSON_AddNumberToObject(cliente_json, "id_abbonamento", nodo->cliente.id_abbonamento);
+
+    cJSON_AddItemToArray(array_json, cliente_json);
+
+    aggiung_clienti_array_json(nodo->dx, array_json);
 }

@@ -28,7 +28,7 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST);
 //Funzioni di scrittura su file JSON
 bool salva_catalogo_su_file(const Catalogo_Lezioni* catalogo, const char* filepath);
 bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* filepath);
-bool salva_abbonamenti_su_file(const NodoAlbero* lista, const char* filepath);
+bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath);
 
 
 
