@@ -17,6 +17,8 @@ Stampa a video la prenotazione passata come parametro
 
 @param Prenotazione prenotazione
 
+Pre: prenotazione != NULL
+
 @result mostrerà su terminale ID, Nome, Cognome, Lezione, Data e Ora
 
 */

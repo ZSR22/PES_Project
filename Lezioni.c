@@ -24,7 +24,7 @@ Catalogo_Lezioni catalogo;
   
    @param Catalogo_Lezioni* catalogo
 
-  -Pre: catalogo != NULL
+  -Pre: catalogo == NULL
 
   @result catalogo->lezione allocato, numero_lezioni = 0, capacity = CAPACITÀ_INIZIALE
  */
@@ -45,7 +45,7 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
   @param Catalogo_Lezioni* catalogo
   @param Lezione nuova_lezione
 
-  -Pre: catalogo != NULL, catalogo->lezione allocato
+  -Pre: catalogo != NULL, nuova_lezione != NULL
 
   @result lezione inserita in coda, size incrementato, capacity raddoppiata se necessario
  */
@@ -138,8 +138,6 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
 */
 void elimina_catalogo(Catalogo_Lezioni *catalogo){
 
-    if(catalogo == NULL || catalogo->lezione == NULL) return;
-
     free(catalogo->lezione);
     catalogo->lezione = NULL;
     catalogo->numero_lezioni = 0;
@@ -189,7 +187,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
    @param Catalogo_Lezioni* catalogo
    @param Lezione lezione
 
-   
+  Pre: id valido 
   
   @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */
@@ -216,7 +214,7 @@ const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned in
   @param Catalogo_Lezioni* catalogo
   @param time_t orario -> orario da controllare
 
-  -Pre: catalogo != NULL
+  -Pre: catalogo != NULL, orario valido
 
   @return true se esiste almeno una lezione con lo stesso orario, false altrimenti
 

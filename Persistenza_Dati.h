@@ -30,7 +30,12 @@ bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepat
 bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* filepath);
 bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath);
 
+void elimina_elem_da_persistenza(const char* tipo, const unsigned int id);
 
+// Queste macro fungono da alias per la funzione elimina_elem_da_persistenza
+#define elimina_cliente_da_persistenza(id) elimina_elem_da_persistenza("cliente", id)
+#define elimina_lezione_da_persistenza(id) elimina_elem_da_persistenza("lezione", id)
+#define elimina_prenotazione_da_persistenza(id) elimina_elem_da_persistenza("prenotazione", id)
 
 
 

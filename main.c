@@ -18,12 +18,6 @@
  */
 
 
-#define MAX_PRENOTAZIONI 100
-
-NodoAlbero* radice = NULL;
-Prenotazione prenotazioni[MAX_PRENOTAZIONI];
-int num_prenotazioni = 0;
-
 void menu(){
   printf("\n==== GESTIONE PALESTRA ====\n");
   printf("1. Inserisci cliente\n");
@@ -32,29 +26,17 @@ void menu(){
   printf("4. Inserisci prenotazione\n");
   printf("5. Visualizza la lista delle prenotazioni\n");
   printf("6. Inserisci lezione\n");
+  printf("7. Visualizza lezioni disponibili\n");
   printf("0. Esci\n");
   printf("===========================\n");
   printf("Scegli un'opzione: ");
 }
-
-/*
-
-  Verifica se un file è vuoto o non esiste
-
-  @param char* filepath → percorso del file da controllare
-
-  -Pre: filepath valido
-
-  @return true se il file è vuoto o non apribile, false altrimenti
-
-*/
-
+    
 int main(){
   
   NodoAlbero* radice = NULL;
   int scelta;
   char codice_fiscale[17];
-  Cliente c;
   Catalogo_Lezioni catalogo;
   Lista_Prenotazioni* lista = crea_lista_prenotazioni();
 
@@ -67,17 +49,20 @@ int main(){
   }
 
   if(!file_vuoto(PATH_FILE_PRENOTAZIONI)){
-    carica_prenotazioni_da_file(PATH_FILE_ABBONAMENTI, lista);
+    carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
   }
 
   do{
     menu();
     scanf("%d", &scelta);
-    getchar(); //serve a pulire il buffer
-
+    getchar(); 
+    
     switch (scelta)
     {
-      case 1:
+      
+      
+      case 1:{
+        Cliente c;
         printf("Inserisci nome: ");
         fgets(c.nome, sizeof(c.nome), stdin);
         c.nome[strcspn(c.nome,"\n")] = '\0';
@@ -94,6 +79,7 @@ int main(){
         scanf("%d", &c.durata);
 
         c.data_inizio = time(NULL); // data attuale
+        c.id_abbonamento = genera_id_univoco(PATH_FILE_ABBONAMENTI);
 
         radice = inserisci_cliente(radice, c);
 
@@ -105,11 +91,20 @@ int main(){
         }
         
         break;
-      case 2:
+      }
+      
+      
+      
+      
+      case 2:{
         stampa_clienti_ordinati(radice);
         break;
-
-      case 3:
+      }
+      
+      
+      
+      
+      case 3:{
         printf("Inserisci codice fiscale da cercare:");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
@@ -124,7 +119,11 @@ int main(){
         }
         break;
 
-      case 4:
+      } 
+      
+      
+      
+      case 4:{
         
         printf("Inserisci codice fiscale: ");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
@@ -153,13 +152,13 @@ int main(){
           break;
         }
 
-        Prenotazione* nuova_prenotazione;
-        nuova_prenotazione->ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
-        nuova_prenotazione->lezione = *lezione_trovata;
-        nuova_prenotazione->partecipante = cliente_trovato->cliente;
-        nuova_prenotazione->lezione = *lezione_trovata;
+        Prenotazione nuova_prenotazione;
+        nuova_prenotazione.ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
+        nuova_prenotazione.lezione = *lezione_trovata;
+        nuova_prenotazione.partecipante = cliente_trovato->cliente;
+        nuova_prenotazione.lezione = *lezione_trovata;
 
-        aggiungi_prenotazione(lista, *nuova_prenotazione);
+        aggiungi_prenotazione(lista, nuova_prenotazione);
 
         bool prenotazione_salvata_su_file = salva_prenotazioni_su_file(lista, PATH_FILE_PRENOTAZIONI);
         if(prenotazione_salvata_su_file){
@@ -169,11 +168,21 @@ int main(){
         }
         break;
 
-      case 5:
+      }
+      
+      
+      
+      
+      case 5:{
         visualizza_prenotazioni(lista);
         break;
 
-      case 6:
+      }
+      
+      
+      
+      
+      case 6:{
         Lezione nuova_lezione;
         char nome[MAX_NOME];
         int giorno, mese, anno , ora, minuto; 
@@ -181,20 +190,20 @@ int main(){
         nuova_lezione.ID = genera_id_univoco(PATH_FILE_LEZIONI);
         
         printf("Inserisci il nome della lezione: ");
-        fgets(nuova_lezione.nome, nome, MAX_NOME);
+        fgets(nuova_lezione.nome, MAX_NOME, stdin);
         nome[strcspn(nome, "\n")] = '\0';
         strncpy(nuova_lezione.nome, nome, MAX_NOME);
 
         printf("Inserisci il numero massimo di posti: ");
-        scanf("d", &nuova_lezione.max_posti);
+        scanf("%d", &nuova_lezione.max_posti);
         getchar();
 
         printf("Inserisci data e ora (gg mm aaaa hh mm): ");
         scanf("%d %d %d %d %d", &giorno, &mese, &anno, &ora, &minuto);
         getchar();
 
-        Orario_Tm* tm_orario;
-        nuova_lezione.data = converti_orario_in_time_t(tm_orario, giorno, mese, anno, ora, minuto);
+        Orario_Tm tm_orario;
+        nuova_lezione.data = converti_orario_in_time_t(&tm_orario, giorno, mese, anno, ora, minuto);
         if(conflitto_orario_lezione(&catalogo, nuova_lezione.data)){
           printf("Esiste già una lezione a questo orario\n");
           break;
@@ -210,19 +219,44 @@ int main(){
         }
       
       
-      break;  
+        break; 
+      
+      }
+      
+      
+      
+      
+      
+      case 7:{
+        mostra_lezioni(catalogo);
+        break;
 
-      case 0:
+      }
+      
+      
+      
+      
+      
+      case 0:{
         printf("Uscita in corso...\n");
         libera_clienti(radice);
         libera_lista_prenotazioni(lista);
         elimina_catalogo(&catalogo);
         break;
 
-      default:
+      }
+      
+      
+      
+      
+      default:{
         printf("Scelta non valida. Riprova.\n");
       }
 
-    } while (scelta != 0);
-    return 0;
+    } 
+  } while (scelta != 0);
+
+  return 0;
+
+
 }

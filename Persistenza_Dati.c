@@ -19,7 +19,7 @@
 
   @param char* filepath
 
-  -Pre: filepath valido, file in formato JSON esistente
+  -Pre: filepath != NULL
 
   @return Catalogo_Lezioni popolato con i dati letti dal file
 */
@@ -29,7 +29,7 @@ Catalogo_Lezioni carica_catalogo_da_file(const char* filepath){
     inizializza_catalogo(&catalogo);
 
     FILE* file = fopen(filepath, "r");
-    if(!file){fprintf(stderr, "Errore apertura file lezioni.json\n"); return catalogo;}
+    if(!file){fprintf(stderr, "Errore apertura file: %s\n", filepath); return catalogo;}
 
     fseek(file, 0, SEEK_END);
     long int lunghezza = ftell(file);
@@ -88,7 +88,7 @@ Catalogo_Lezioni carica_catalogo_da_file(const char* filepath){
   @param char* filepath
   @param Lista_Prenotazioni* lista
 
-  -Pre: lista != NULL, filepath valido
+  -Pre: lista inizaializzata a NULL, filepath != NULL
 
   @result lista popolata con le prenotazioni lette dal file
 */
@@ -96,12 +96,12 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
 
     FILE* file = fopen(filepath, "r");
     if (!file){
-        fprintf(stderr, "Errore apertura file prenotazioni.json\n");
+        fprintf(stderr, "Errore apertura file: %s\n", filepath);
         return;
     } 
 
     fseek(file, 0, SEEK_END);
-    long lunghezza = ftell(file);
+    long int lunghezza = ftell(file);
     rewind(file);
 
     char* buffer = malloc(lunghezza + 1);
@@ -194,7 +194,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
   @param char* filepath
   @param NodoAlbero** radice_BST
 
-  -Pre: filepath valido, radice inizializzata a NULL
+  -Pre: filepath != NULL, radice inizializzata a NULL
 
   @result albero aggiornato con tutti gli abbonamenti trovati nel file
 */
@@ -202,12 +202,12 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
 
     FILE* file = fopen(filepath, "r");
     if (!file){
-        fprintf(stderr, "Errore apertura file!\n");
+        fprintf(stderr, "Errore apertura file: %s\n", filepath);
         return;
     } 
 
     fseek(file, 0, SEEK_END);
-    long lunghezza = ftell(file);
+    long int lunghezza = ftell(file);
     rewind(file);
 
     char* buffer = malloc(lunghezza + 1);
@@ -272,7 +272,7 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
   @param Catalogo_Lezioni* catalogo
   @param char* filepath
 
-  -Pre: catalogo != NULL, filepath valido
+  -Pre: catalogo != NULL, filepath != NULL
 
   @return true se il salvataggio è avvenuto con successo, false altrimenti
 */
@@ -297,7 +297,7 @@ bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepat
     if(!file){
         cJSON_Delete(root);
         free(stringa_json);
-        fprintf(stderr, "Errore apertura file lezioni.json\n");
+        fprintf(stderr, "Errore apertura file: %s\n", filepath);
         return false;
     }
 
@@ -355,7 +355,7 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
     cJSON* stringa_json = cJSON_Print(root);
     FILE* file = fopen(PATH_FILE_PRENOTAZIONI, "w");
     if(!file){
-        fprintf(stderr, "Errore apertura file prenotazioni.json\n");
+        fprintf(stderr, "Errore apertura file: %s\n", filepath);
         cJSON_Delete(root);
         free(stringa_json);
         return false;
@@ -374,7 +374,7 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
   @param NodoAlbero* nodo
   @param char* filepath
 
-  -Pre: nodo valido o NULL, filepath valido
+  -Pre: nodo != NULL, filepath valido
 
   @return true se il salvataggio è avvenuto con successo, false altrimenti
 */
@@ -387,7 +387,7 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
     cJSON* stringa_json = cJSON_Print(root);
     FILE* file = fopen(PATH_FILE_ABBONAMENTI, "w");
     if(!file){
-        fprintf(stderr, "Errore apertura file clienti.json\n");
+        fprintf(stderr, "Errore apertura file: %s\n", filepath);
         cJSON_Delete(root);
         free(stringa_json);
         return false;
@@ -399,6 +399,98 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
     cJSON_Delete(root);
 }
 
+
+/*
+  Elimina un elemento dal file JSON persistente in base all'ID specificato. 
+  
+
+  @param char* tipo -> Il tipo passato come parametro sceglie il path del file persistente da modificare
+  @param int id
+
+  - Pre: Id valido
+  @result se l'elemento esiste, viene rimosso dal file; altrimenti viene stampato un messaggio di errore
+*/
+void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
+
+    const char* path = NULL;
+
+    if(strcmp(tipo, "cliente") == 0){
+        path = PATH_FILE_ABBONAMENTI;
+    }
+    else if(strcmp(tipo, "lezione" == 0)){
+        path = PATH_FILE_LEZIONI;
+    }
+    else if(strcmp(tipo, "prenotazione") == 0){
+        path = PATH_FILE_PRENOTAZIONI;
+    }
+    else{
+        fprintf(stderr, "Tipo inserito non valido\n");
+        return;
+    }
+
+    FILE* file = fopen(path, "r");
+    if(!file){
+        fprintf(stderr, "Errore apertura file: %s\n", path);
+        fclose(file);
+        return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long int lunghezza = ftell(file);
+    rewind(file);
+    char* buffer = malloc(lunghezza + 1);
+    fread(buffer, 1, lunghezza, file);
+    buffer[lunghezza] = '\0';
+    fclose(file);
+
+    cJSON* root = cJSON_Parse(buffer);
+    free(buffer);
+    if(!cJSON_IsArray(root)){
+        fprintf(stderr, "Errore nel parsing Json");
+        cJSON_Delete(root);
+        return;
+    }
+
+    bool elemento_trovato = false;
+    int indice = 0;
+    cJSON* item = NULL;
+    cJSON_ArrayForEach(item, root){
+        cJSON* id_json = cJSON_GetObjectItem(item, "ID");
+
+        if(id_json && cJSON_IsNumber(id_json) && id_json->valueint == id){
+
+            cJSON_DeleteItemFromArray(root, indice);
+            elemento_trovato = true;
+            break;
+        }
+
+        indice++;
+    }
+
+    if(!elemento_trovato){
+        printf("%s con id: %u non trovato\n", path, id);
+        cJSON_Delete(root);
+        return;
+    }
+    
+
+    char* contenuto_aggiornato = cJSON_Print(root);
+
+    FILE* file = fopen(path, "w");
+    if(!file){
+        fprintf(stderr, "Errore apertura file: %s\n", path);
+        return;
+    }
+
+    fprintf(file, contenuto_aggiornato);
+
+    free(contenuto_aggiornato);
+    fclose(file);
+
+    printf("%s con id: %u, eliminato dalla persistenza", path, id);
+
+}
+
 /*
   
   Inserisce ricorsivamente i clienti dell'albero nell'array JSON; la funzione ricorsiva visita in-order(simmetricamente) l'albero
@@ -406,7 +498,7 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
   @param NodoAlbero* nodo
   @param cJSON* array_json
 
-  -Pre: array_json != NULL, nodo può essere NULL
+  -Pre: array_json != NULL
 
   @return I clienti vengono aggiunti all'array JSON.
 */

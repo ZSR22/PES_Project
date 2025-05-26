@@ -18,6 +18,8 @@ Converte una variabile da tipo time_t in una struttura Tm adatta alla visualizza
 
 @param time_t orario
 
+Pre: orario valido
+
 @return riporta un puntatore alla struttura Orario_Tm
 
 */
@@ -40,7 +42,7 @@ Orario_Tm* converti_orario_in_struct_tm(time_t orario){
   @param int ora
   @param int minuto
 
-  -Pre: tm_orario != NULL, valori di data/ora validi
+  -Pre: tm_orario inizializzato, valori di data/ora validi
 
   @return valore time_t corrispondente alla data e ora specificata
 

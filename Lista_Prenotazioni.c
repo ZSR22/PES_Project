@@ -34,7 +34,7 @@ Lista_Prenotazioni crea_lista_prenotazioni(){
     @param Lista_Prenotazioni* lista 
     @param Prenotazione prenotazione  
 
-  -Pre: lista != NULL
+  -Pre: lista != NULL, prenotazione != NULL
 
    @result prenotazione aggiunta in coda alla lista
  */
@@ -86,17 +86,12 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
   @param Lista_Prenotazioni* lista
   @param Lezione* lezione
 
-  Pre: lista != NULL, lezione valida
+  Pre: lista != NULL, lezione != NULL
 
   @result riporta True se la prenotazione è stata trovata e rimossa, False se non è stata trovata oppure la lezione non è valida oppure la lista prenotazioni è vuota
  */
 bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione){
-
-    if(lezione == NULL || lista == NULL){
-        
-        fprintf(stderr, "Lezione non valida o lista prenotazioni vuota\n");
-        return false; 
-    }    
+  
     NodoPrenotazione* nodo_corrente = *lista;
     NodoPrenotazione* nodo_precedente = NULL;
     
@@ -223,7 +218,7 @@ int conteggia_prenotazioni( const Lista_Prenotazioni* lista, const Lezione* lezi
     @param Lista_Prenotazioni lista
     @param Lezione lezione_da_analizzare
 
-  -Pre: lista valida, lezione esistente
+  -Pre: lista != NULL, lezione != NULL
 
   @return True se la lezione è al completo, altrimenti False
  */
@@ -249,7 +244,7 @@ bool lezione_piena(const Lista_Prenotazioni lista, const Lezione lezione_da_anal
     @param Lezione lezione
     @param Cliente partecipante
 
-  -Pre: lista valida, lezione con data definita, nome e cognome non nulli
+  -Pre: lista != NULL, lezione != NULL, partecipante != NULL
 
   @return True se esiste un conflitto, altrimenti False
  */
@@ -295,7 +290,7 @@ bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione le
  */
 Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
 
-    if(lista == NULL || &lezione == NULL || &partecipante == NULL){return NULL;}
+    if(lista == NULL || &lezione == NULL || &partecipante == NULL){printf("Prenotazione non trovata\n"); return NULL;}
        
     NodoPrenotazione* nodo_corrente = lista;
 
