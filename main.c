@@ -27,11 +27,20 @@ void menu(){
   printf("5. Visualizza la lista delle prenotazioni\n");
   printf("6. Inserisci lezione\n");
   printf("7. Visualizza lezioni disponibili\n");
+  printf("8. Elimina Cliente\n");
+  printf("9. Elimina Prenotazione\n");
+  printf("10. Elimina lezione\n");
+  printf("11. Visualizza report mensile\n");
   printf("0. Esci\n");
   printf("===========================\n");
   printf("Scegli un'opzione: ");
 }
-    
+
+void attendi_utente(){
+  printf("\nPremi INVIO per continuare...");
+  getchar();
+}
+
 int main(){
   
   NodoAlbero* radice = NULL;
@@ -41,7 +50,7 @@ int main(){
   Lista_Prenotazioni* lista = crea_lista_prenotazioni();
 
   if(!file_vuoto(PATH_FILE_ABBONAMENTI)){
-    carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, radice);
+    carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
   }
 
   if(!file_vuoto(PATH_FILE_LEZIONI)){
@@ -57,10 +66,7 @@ int main(){
     scanf("%d", &scelta);
     getchar(); 
     
-    switch (scelta)
-    {
-      
-      
+    switch (scelta){
       case 1:{
         Cliente c;
         printf("Inserisci nome: ");
@@ -89,7 +95,7 @@ int main(){
         } else{
           printf("Errore salvataggio su file.\n");
         }
-        
+        attendi_utente();
         break;
       }
       
@@ -98,6 +104,7 @@ int main(){
       
       case 2:{
         stampa_clienti_ordinati(radice);
+        attendi_utente();
         break;
       }
       
@@ -117,6 +124,7 @@ int main(){
         } else {
           printf("Cliente non trovato.\n");
         }
+        attendi_utente();
         break;
 
       } 
@@ -136,6 +144,7 @@ int main(){
         }
         if (!abbonamento_valido(cliente_trovato->cliente)) {
           printf("Abbonamento non valido.\n");
+          attendi_utente();
           break;
         }
         
@@ -149,6 +158,7 @@ int main(){
         Lezione* lezione_trovata = trova_lezione(&catalogo, id_inserito);
         if(lezione_trovata == NULL){
           printf("Lezione non trovata.\n");
+          attendi_utente();
           break;
         }
 
@@ -166,6 +176,7 @@ int main(){
         } else{
           printf("Errore salvataggio su file.\n");
         }
+        attendi_utente();
         break;
 
       }
@@ -175,6 +186,7 @@ int main(){
       
       case 5:{
         visualizza_prenotazioni(lista);
+        attendi_utente();
         break;
 
       }
@@ -218,7 +230,7 @@ int main(){
           printf("Errore salvataggio su file.\n");
         }
       
-      
+        attendi_utente();
         break; 
       
       }
@@ -229,13 +241,71 @@ int main(){
       
       case 7:{
         mostra_lezioni(catalogo);
+        attendi_utente();
         break;
 
       }
       
       
+      case 8: {
+        char codice_fiscale[17];
+        printf("Inserisci il codice fiscale del cliente da eliminare: ");
+        scanf("%16s", codice_fiscale);
+        Cliente* cliente_trovato = cerca_cliente(radice, codice_fiscale);
+        if (cliente_trovato == NULL) {
+            printf("Cliente con codice fiscale %s non trovato.\n", codice_fiscale);
+        } else {
+            radice = elimina_cliente(radice, codice_fiscale);
+            printf("Cliente con codice fiscale %s eliminato con successo.\n", codice_fiscale);
+            attendi_utente();
+        break;
+      }
+      }
       
       
+      case 9: {
+        char codice_fiscale[17];
+        int id_lezione;
+        int data;
+        printf("Inserisci il codice fiscale del cliente: ");
+        scanf("%16s", codice_fiscale);
+        Cliente* cliente_trovato = cerca_cliente(radice, codice_fiscale);
+        if (cliente_trovato == NULL) {
+            printf("Cliente con codice fiscale %s non trovato.\n", codice_fiscale);
+            attendi_utente();
+            break;
+        }
+        printf("Inserisci l'ID della lezione da eliminare: ");
+        scanf("%d", &id_lezione);
+        printf("Inserisci la data della lezione (in formato timestamp): ");
+        scanf("%d", &data);
+        if (elimina_prenotazione(lista, id_lezione, data, cliente_trovato->codice_fiscale)) {
+            printf("Prenotazione eliminata con successo.\n");
+        } else {
+            printf("Prenotazione non trovata.\n");
+        }
+        attendi_utente();
+        break;
+      }
+
+      case 10: {
+        int id_lezione;
+        printf("Inserisci l'ID della lezione da eliminare: ");
+        scanf("%d", &id_lezione);
+        Lezione* lezione_trovata = trova_lezione(&catalogo, id_lezione);
+        if (lezione_trovata != NULL) {
+            elimina_lezione(&catalogo, *lezione_trovata);
+            printf("Lezione eliminata con successo.\n");
+        } else {
+            printf("Lezione non trovata.\n");
+        }
+        attendi_utente();
+        break;
+      }
+      case 11: {
+        attendi_utente();
+        break;
+      }
       
       case 0:{
         printf("Uscita in corso...\n");
@@ -245,8 +315,6 @@ int main(){
         break;
 
       }
-      
-      
       
       
       default:{
