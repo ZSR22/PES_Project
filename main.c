@@ -45,7 +45,6 @@ int main(){
   
   NodoAlbero* radice = NULL;
   int scelta;
-  char codice_fiscale[17];
   Catalogo_Lezioni catalogo;
   Lista_Prenotazioni* lista = crea_lista_prenotazioni();
 
@@ -83,6 +82,11 @@ int main(){
 
         printf("Inserisci durata abbonamento (in giorni): ");
         scanf("%d", &c.durata);
+        getchar();
+
+        printf("Inserisci data di nascita formato gg/mm/anno esempio -> 16/07/2001: ");
+        fgets(c.data_nascita, sizeof(c.data_nascita), stdin);
+        c.data_nascita[strcspn(c.data_nascita, "\n")] = '\0';
 
         c.data_inizio = time(NULL); // data attuale
         c.id_abbonamento = genera_id_univoco(PATH_FILE_ABBONAMENTI);
@@ -112,6 +116,8 @@ int main(){
       
       
       case 3:{
+        
+        char codice_fiscale[MAX_CF];
         printf("Inserisci codice fiscale da cercare:");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
@@ -133,6 +139,7 @@ int main(){
       
       case 4:{
         
+        char codice_fiscale[MAX_CF];
         printf("Inserisci codice fiscale: ");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
@@ -195,6 +202,7 @@ int main(){
       
       
       case 6:{
+        
         Lezione nuova_lezione;
         char nome[MAX_NOME];
         int giorno, mese, anno , ora, minuto; 
@@ -248,59 +256,111 @@ int main(){
       
       
       case 8: {
-        char codice_fiscale[17];
+        
+        char codice_fiscale[MAX_CF];
+
         printf("Inserisci il codice fiscale del cliente da eliminare: ");
-        scanf("%16s", codice_fiscale);
-        Cliente* cliente_trovato = cerca_cliente(radice, codice_fiscale);
-        if (cliente_trovato == NULL) {
-            printf("Cliente con codice fiscale %s non trovato.\n", codice_fiscale);
-        } else {
-            radice = elimina_cliente(radice, codice_fiscale);
-            printf("Cliente con codice fiscale %s eliminato con successo.\n", codice_fiscale);
-            attendi_utente();
+        fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
+        codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+
+        Cliente* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
+
+        if(cliente_trovato != NULL){
+
+          radice = elimina_cliente(cliente_trovato, codice_fiscale);
+          printf("Cliente eliminato\n");
+          elimina_cliente_da_persistenza(cliente_trovato->id_abbonamento);
+          
+        } else{
+          
+          printf("Cliente non presente a sistema\n");
+          
+        }
+
+        attendi_utente();
         break;
-      }
       }
       
       
       case 9: {
-        char codice_fiscale[17];
-        int id_lezione;
-        int data;
+        char codice_fiscale[MAX_CF];
+        unsigned int id_lezione;
+
         printf("Inserisci il codice fiscale del cliente: ");
-        scanf("%16s", codice_fiscale);
-        Cliente* cliente_trovato = cerca_cliente(radice, codice_fiscale);
+        fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
+        codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+
+        Cliente* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
         if (cliente_trovato == NULL) {
             printf("Cliente con codice fiscale %s non trovato.\n", codice_fiscale);
             attendi_utente();
             break;
         }
-        printf("Inserisci l'ID della lezione da eliminare: ");
-        scanf("%d", &id_lezione);
-        printf("Inserisci la data della lezione (in formato timestamp): ");
-        scanf("%d", &data);
-        if (elimina_prenotazione(lista, id_lezione, data, cliente_trovato->codice_fiscale)) {
-            printf("Prenotazione eliminata con successo.\n");
-        } else {
-            printf("Prenotazione non trovata.\n");
+        
+        printf("Inserisci l'ID della lezione prenotata: ");
+        scanf("%u", &id_lezione);
+        getchar();
+
+        Lezione* lezione_trovata = trova_lezione(&catalogo, id_lezione);
+        if(lezione_trovata == NULL){
+          printf("Lezione con id: %u non presente a sistema\n", id_lezione);
+          attendi_utente();
+          break;
         }
+
+        Prenotazione* prenotazione_trovata = trova_prenotazione(lista, *lezione_trovata, *cliente_trovato);
+
+        if(prenotazione_trovata != NULL){
+          
+          bool prenotazione_eliminata = disdici_prenotazione(lista, lezione_trovata);
+          
+          
+          if(prenotazione_eliminata){
+            
+            printf("Prenotazione eliminata\n");
+            elimina_prenotazione_da_persistenza(prenotazione_trovata->ID);
+            
+          } else{
+            
+            printf("Errore di eliminazione prenotazione\n");
+
+          }
+          
+
+        }else{
+          
+          printf("Prenotazione non presente a sistema\n");
+
+        }
+        
         attendi_utente();
         break;
+
       }
 
       case 10: {
         int id_lezione;
+
         printf("Inserisci l'ID della lezione da eliminare: ");
         scanf("%d", &id_lezione);
+        getchar();
+
         Lezione* lezione_trovata = trova_lezione(&catalogo, id_lezione);
         if (lezione_trovata != NULL) {
-            elimina_lezione(&catalogo, *lezione_trovata);
-            printf("Lezione eliminata con successo.\n");
-        } else {
-            printf("Lezione non trovata.\n");
+            
+          elimina_lezione(&catalogo, *lezione_trovata);
+          elimina_lezione_da_persistenza(lezione_trovata->ID);
+          printf("Lezione eliminata con successo.\n");
+
+        }else{
+            
+          printf("Lezione non trovata.\n");
+        
         }
+
         attendi_utente();
         break;
+        
       }
       case 11: {
         attendi_utente();

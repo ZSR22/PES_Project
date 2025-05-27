@@ -431,7 +431,6 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     FILE* file = fopen(path, "r");
     if(!file){
         fprintf(stderr, "Errore apertura file: %s\n", path);
-        fclose(file);
         return;
     }
 
@@ -446,7 +445,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     cJSON* root = cJSON_Parse(buffer);
     free(buffer);
     if(!cJSON_IsArray(root)){
-        fprintf(stderr, "Errore nel parsing Json");
+        fprintf(stderr, "Errore nel parsing Json\n");
         cJSON_Delete(root);
         return;
     }
@@ -468,7 +467,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     }
 
     if(!elemento_trovato){
-        printf("%s con id: %u non trovato\n", path, id);
+        printf("%s con id: %u non trovato in persistenza\n", path, id);
         cJSON_Delete(root);
         return;
     }

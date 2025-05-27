@@ -244,3 +244,9 @@ void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) 
         printf("Cliente non trovato\n");
     }
 }
+
+// Funzione da implementare
+NodoAlbero *elimina_cliente(NodoAlbero* radice, const char* codice_fiscale){
+
+    return NULL;
+}
