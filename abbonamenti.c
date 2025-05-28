@@ -15,20 +15,21 @@
 
 //Creazione di un albero binario di ricerca per la memorizzazione dei clienti
 
-/*
-Funzione crea_nodo
-----------------
-restituisce il nuovo nodo compilato dell'albero binario
-
-Parametri:
-    Cliente c
-
-Precondizione:
-    Devono essere stati dati tutti i dati del cliente
-
-Post condizione:
-    ritorna il nodo creato
-*/
+/**
+ * Crea un nuovo nodo dell'albero binario di ricerca con un cliente.
+ * 
+ * Questa funzione alloca memoria per un nuovo nodo, inizializza il cliente e i puntatori ai figli sinistro e destro.
+ * Se l'allocazione della memoria fallisce, il programma termina con un messaggio di errore.
+ * 
+ * @param c Cliente da inserire nel nodo.
+ * @return Puntatore al nuovo nodo creato.
+ * 
+ * Precondizione:
+ * - Il cliente deve essere valido e non NULL.
+ * side effects:
+ * - Stampa un messaggio di errore se l'allocazione della memoria fallisce.
+ * - Stampa un messaggio di successo quando il cliente viene salvato con successo.
+ */
 NodoAlbero* crea_nodo(Cliente c) {
 NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     // controlla se l' allocazione è avvenuta con successo
@@ -43,31 +44,24 @@ NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     return nuovo;
 }
 
-/*
-Funzione inserisci_cliente
-----------------
-    inserisce un cliente nell' albero binario di ricerca
-    se l' albero è vuoto crea un nuovo nodo
-    se l' albero non è vuoto inserisce il cliente in modo ordinato
-    in base al codice fiscale
-    se il cliente è già presente restituisce il nodo esistente
-    se non è stato possibile allocare memoria restituisce NULL
-Parametri:
-    Radice albero binario
-    Cliente c
-
-Precondizione:
-    Devono essere stati dati tutti i dati del cliente
-    La radice dell'albero binario non deve essere NULL
-
-Post condizione:
-    ritorna il nodo creato
-    se già presente restituisce il nodo esistente
-    restituisce NULL se non è stato possibile allocare memoria
-    se l' albero è vuoto crea un nuovo nodo
-    se l' albero non è vuoto inserisce il cliente in modo ordinato
-    in base al codice fiscale
-*/
+/**
+ * Inserisce un cliente nell'albero binario di ricerca.
+ * 
+ * Questa funzione inserisce un nuovo cliente nell'albero binario di ricerca in base al codice fiscale.
+ * Se il nodo corrente è NULL, viene creato un nuovo nodo con il cliente.
+ * Se il codice fiscale del cliente è minore del nodo corrente, la funzione ricorsivamente inserisce il cliente nel sottoalbero sinistro.
+ * Se il codice fiscale del cliente è maggiore, viene inserito nel sottoalbero destro.
+ * Se il codice fiscale del cliente esiste già, viene stampato un messaggio di errore.  
+ * 
+ * @param radice Puntatore alla radice dell'albero.
+ * @param c Cliente da inserire.
+ * @return La nuova radice dell'albero dopo l'inserimento.
+ * Precondizione:
+ * - La radice dell'albero non deve essere NULL.
+ * side effects:
+ * - Stampa un messaggio di errore se il codice fiscale del cliente esiste già.
+ * - Stampa un messaggio di successo se il cliente è stato inserito correttamente.
+ */
 NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
     if (radice == NULL) {
         NodoAlbero* nuovo = crea_nodo(c);
@@ -87,27 +81,21 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
     }
     return radice;
 }
-/*
-Funzione abbonamento_valido
-----------------
-    ritorna 1 se l' abbonamento è valido
-    ritorna 0 se l' abbonamento non è valido
-    stampa un errore se la data di inizio non è valida
-    calcola i giorni passati dall' inizio dell' abbonamento
-    controlla se i giorni passati sono minori o uguali alla durata dell' abbonamento
-    se si ritorna 1 altrimenti ritorna 0    
-
-Parametri:
-    Cliente c
-
-Precondizione:
-    Devono essere stati dati tutti i dati del cliente
-
-Post condizione:
-    ritorna 1 se l' abbonamento è valido
-    ritorna 0 se l' abbonamento non è valido
-    stampa un errore se la data di inizio non è valida
-*/
+/**
+ * Verifica se l'abbonamento di un cliente è ancora valido.
+ * 
+ * Questa funzione calcola la differenza tra la data corrente e la data di inizio dell'abbonamento
+ * del cliente, e confronta il numero di giorni trascorsi con la durata dell'abbonamento.
+ * Se i giorni trascorsi sono minori o uguali alla durata, l'abbonamento è considerato valido.
+ * 
+ * @param c Cliente da verificare.
+ * @return 1 se l'abbonamento è valido, 0 altrimenti.
+ * Precondizione:
+ * - La data di inizio dell'abbonamento deve essere valida e non nel futuro.
+ * side effects:
+ * - Stampa un messaggio di errore se la data di inizio non è valida.
+ * @return 1 se l'abbonamento è valido, 0 altrimenti.
+ */
 int abbonamento_valido(Cliente c) {
     time_t ora = time(NULL); // ottiene l'ora corrente
     int giorni_passati = difftime(ora, c.data_inizio)/ (60 * 60 * 24);// calcola i giorni passati dall'inizio dell'abbonamento con la differenza di tempo e la conversione in giorni
@@ -117,22 +105,20 @@ int abbonamento_valido(Cliente c) {
     }
     return giorni_passati <= c.durata; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
 }
-/*
-Funzione stampa_clienti_ordinati
-----------------
-    stampa i clienti ordinati in base al codice fiscale
-    stampa il nome, cognome, id abbonamento e se l' abbonamento è valido o meno
-    se l' albero è vuoto stampa un errore
-
-Parametri:
-    Radice albero binario
-
-Precondizione:
-    la radice dell'albero binario non deve essere NULL
-
-Post condizione:
-    nessuna la funzione non modifica l' albero binario
-*/
+/**
+ * Stampa i clienti in ordine crescente in base al codice fiscale.
+ *
+ * Questa funzione esegue una visita in-order dell'albero binario di ricerca e stampa i dettagli dei clienti.
+ * I clienti vengono stampati in ordine crescente in base al loro codice fiscale.
+ * Se l'albero è vuoto, viene stampato un messaggio di errore.
+ * 
+ * @param radice Puntatore alla radice dell'albero binario di ricerca.
+ * Precondizione:
+ * - La radice dell'albero non deve essere NULL.
+ * side effects:
+ * - Stampa i dettagli dei clienti in ordine crescente.
+ * - Se l'albero è vuoto, stampa un messaggio di errore.
+ */
 
 void stampa_clienti_ordinati(NodoAlbero* radice) {
     if (radice != NULL) {
@@ -144,26 +130,18 @@ void stampa_clienti_ordinati(NodoAlbero* radice) {
     }
     return;
 }
-/*
-Funzione libera_clienti
-----------------
-    libera la memoria allocata per l' albero binario
-    se l' albero è vuoto stampa un errore  
-
-Parametri:
-    Radice albero binario
-
-Precondizione:
-    la radice dell'albero binario non deve essere NULL
-    l' albero binario deve essere stato creato
-    l' albero binario deve essere stato popolato
-
-Post condizione:
-    libera la memoria allocata per l' albero binario
-    se l' albero è vuoto stampa un errore
-    la funzione non restituisce nulla
-
-*/
+/**
+ * Cancella ricorsivamente tutti i nodi dell'albero binario di ricerca.
+ * 
+ * Questa funzione libera la memoria allocata per ogni nodo dell'albero binario di ricerca.
+ * Viene chiamata ricorsivamente per i nodi sinistro e destro, e infine libera il nodo corrente.
+ * 
+ * @param radice Puntatore alla radice dell'albero da liberare.
+ * Precondizione:
+ * - La radice dell'albero non deve essere NULL.
+ * side effects:
+ * - Libera la memoria allocata per tutti i nodi dell'albero binario di ricerca.
+ */
 void libera_clienti(NodoAlbero* radice) {
     if (radice != NULL) {
         libera_clienti(radice->sx);
@@ -172,29 +150,20 @@ void libera_clienti(NodoAlbero* radice) {
     }
     return;
 }
-/*
-Funzione ricerca_cliente
-----------------
-    ricerca un cliente nell' albero binario di ricerca
-    se l' albero è vuoto restituisce NULL
-    se il cliente è trovato restituisce il nodo del cliente
-    se il cliente non è trovato restituisce NULL
-    se non è stato possibile allocare memoria restituisce NULL
-Parametri:
-    Radice albero binario
-    codice_fiscale codice fiscale del cliente da cercare
-Precondizione:
-    la radice dell'albero binario non deve essere NULL
-    l' albero binario deve essere stato creato
-    l' albero binario deve essere stato popolato
 
-Post condizione:
-    restituisce il nodo del cliente se trovato
-    restituisce NULL se non è stato possibile allocare memoria
-    restituisce NULL se il cliente non è trovato
-    restituisce NULL se l' albero è vuoto
-    la funzione non modifica l' albero binario
-*/
+
+/**
+ * Cerca un cliente nell'albero binario di ricerca in base al codice fiscale.
+ * 
+ * Questa funzione esegue una ricerca ricorsiva nell'albero binario per trovare un cliente
+ * con un codice fiscale specifico. Se il cliente viene trovato, viene restituito il nodo corrispondente.
+ * @param radice Puntatore alla radice dell'albero.
+ * @param codice_fiscale Codice fiscale del cliente da cercare.
+ * @return Puntatore al nodo del cliente trovato, o NULL se il cliente non esiste nell'albero.	
+ * Precondizione:
+ * - La radice dell'albero non deve essere NULL.
+ * side effects: Nessuno.
+ */
 NodoAlbero* ricerca_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     if (!radice) return NULL;
     int cmp = strcmp(codice_fiscale, radice->cliente.codice_fiscale);
@@ -203,35 +172,16 @@ NodoAlbero* ricerca_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     else return ricerca_cliente(radice->dx, codice_fiscale);
 }
 
-/*
-Funzione ricerca_e_verifica_cliente
-----------------
-    ricerca un cliente nell' albero binario di ricerca
-    se l' albero è vuoto restituisce NULL
-    se il cliente è trovato restituisce il nodo del cliente
-    se il cliente non è trovato restituisce NULL
-    se non è stato possibile allocare memoria restituisce NULL
-    stampa i dati del cliente e se l' abbonamento è valido o meno
-Parametri:
-    Radice albero binario
-    codice_fiscale codice fiscale del cliente da cercare
-    nome nome del cliente
-    cognome cognome del cliente
-    id_abbonamento id abbonamento del cliente
-Precondizione:
-    la radice dell'albero binario non deve essere NULL
-    l' albero binario deve essere stato creato
-    l' albero binario deve essere stato popolato
-    il codice fiscale del cliente deve essere univoco
-    
-Post condizione:
-    restituisce il nodo del cliente se trovato
-    restituisce NULL se non è stato possibile allocare memoria
-    restituisce NULL se il cliente non è trovato
-    restituisce NULL se l' albero è vuoto
-    la funzione non modifica l' albero binario
-    
-*/
+/**
+ * Stampa i dettagli di un cliente cercato nell'albero binario.	
+ * 
+ * @param radice Puntatore alla radice dell'albero.
+ * @param codice_fiscale Codice fiscale del cliente da cercare.
+ * @return Nessun valore restituito.
+ * Precondizione:
+ * - La radice dell'albero non deve essere NULL.`
+ * side effects: Stampa i dettagli del cliente trovato o un messaggio di errore se non trovato.
+ */
 void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     NodoAlbero* trovato = ricerca_cliente(radice, codice_fiscale);
     if (trovato) {
@@ -245,8 +195,53 @@ void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) 
     }
 }
 
-// Funzione da implementare
-NodoAlbero *elimina_cliente(NodoAlbero* radice, const char* codice_fiscale){
 
-    return NULL;
+/**
+ * Trova il nodo con il valore minimo nell'albero a partire da un nodo specificato.	
+ * 
+ * @param radice Puntatore alla radice dell'albero.
+ * @return Puntatore al nodo con il valore minimo.
+ */
+NodoAlbero* trova_minimo(NodoAlbero* nodo) {
+    while (nodo->sx != NULL)
+        nodo = nodo->sx;
+    return nodo;
+}
+
+/**
+ * Elimina un cliente dall'albero in base al codice fiscale.
+ * 
+ * @param radice Puntatore alla radice dell'albero.
+ * @param codice_fiscale Codice fiscale del cliente da eliminare.
+ * @return La nuova radice dell'albero dopo l'eliminazione.
+ */
+
+NodoAlbero* elimina_cliente(NodoAlbero* radice, const char* codice_fiscale) {
+    if (radice == NULL)
+        return NULL;
+    int confronto = strcmp(codice_fiscale, radice->cliente.codice_fiscale);
+    if (confronto < 0) {
+        radice->sx = elimina_cliente(radice->sx, codice_fiscale);
+    } else if (confronto > 0) {
+        radice->dx = elimina_cliente(radice->dx, codice_fiscale);
+    } else {
+        if (radice->sx == NULL && radice->dx == NULL) {
+            free(radice);
+            return NULL;
+        }
+        if (radice->sx == NULL) {
+            NodoAlbero* temp = radice->dx;
+            free(radice);
+            return temp;
+        } else if (radice->dx == NULL) {
+            NodoAlbero* temp = radice->sx;
+            free(radice);
+            return temp;
+        }
+        NodoAlbero* successore = trova_minimo(radice->dx);
+        radice->cliente = successore->cliente;
+        radice->dx = elimina_cliente(radice->dx, successore->cliente.codice_fiscale);
+    }
+
+    return radice;
 }
