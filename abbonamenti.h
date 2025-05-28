@@ -28,11 +28,13 @@ typedef struct {
     time_t data_inizio; // la data di inizio dell'abbonamento
     unsigned int id_abbonamento; // il numero dell'abbonamento
     } Cliente;
-typedef struct {
+typedef struct NodoAlbero {
     Cliente cliente;
-    struct nodo_albero* sx;
-    struct nodo_albero* dx;
+    struct NodoAlbero* sx;
+    struct NodoAlbero* dx;
 } NodoAlbero;
+
+
 
 NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c);
 int abbonamento_valido(Cliente c);
@@ -40,8 +42,6 @@ void stampa_clienti_ordinati(NodoAlbero* radice);
 void libera_clienti(NodoAlbero* radice);
 NodoAlbero* ricerca_cliente(NodoAlbero* radice, const char* codice_fiscale);
 void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale);
-
-//La dichiarazione della funzione è già presente in abbonamenti.c (Quando hai finito cancella questi commenti)
 NodoAlbero* elimina_cliente(NodoAlbero* radice, const char* codice_fiscale);
 
 #endif

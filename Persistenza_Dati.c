@@ -138,10 +138,10 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
             cJSON* id_abbonamento_p = cJSON_GetObjectItem(item, "id_abbonamento");
 
             if(cJSON_IsString(nome_p)){
-                strncpy(prenotazione.partecipante.nome, nome_p->valuestring, LUNGHEZZA_MASSIMA);
+                strncpy(prenotazione.partecipante.nome, nome_p->valuestring, MAX_CHAR);
             }
             if(cJSON_IsString(cognome_p)){
-                strncpy(prenotazione.partecipante.cognome, cognome_p->valuestring, LUNGHEZZA_MASSIMA);
+                strncpy(prenotazione.partecipante.cognome, cognome_p->valuestring, MAX_CHAR);
             }
             if(cJSON_IsString(codice_fiscale_p)){
                 strncpy(prenotazione.partecipante.codice_fiscale, codice_fiscale_p->valuestring, sizeof(prenotazione.partecipante.codice_fiscale));
@@ -229,7 +229,6 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
         cJSON* cognome = cJSON_GetObjectItem(item, "cognome");
         cJSON* codice_fiscale = cJSON_GetObjectItem(item, "codice_fiscale");
         cJSON* data_nascita = cJSON_GetObjectItem(item, "data_di_nascita");
-        cJSON* validità_abbonamento = cJSON_GetObjectItem(item, "attivo");
         cJSON* data_inizio = cJSON_GetObjectItem(item, "data_inizio_abbonamento");
         cJSON* durata = cJSON_GetObjectItem(item, "durata");
         cJSON* id_abbonamento = cJSON_GetObjectItem(item, "id_abbonamento");
@@ -256,7 +255,7 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
             cliente.id_abbonamento = (unsigned int)cJSON_GetNumberValue(id_abbonamento);
        }
 
-       *radice_BST = inserisci_cliente(radice_BST, cliente);
+       *radice_BST = inserisci_cliente(*radice_BST, cliente);
     }
 
     cJSON_Delete(root);
@@ -292,7 +291,7 @@ bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepat
         cJSON_AddItemToArray(root, struttura_lezione);
     }
 
-    cJSON* stringa_json = cJSON_Print(root);
+    char* stringa_json = cJSON_Print(root);
     FILE* file = fopen(PATH_FILE_LEZIONI, "w");
     if(!file){
         cJSON_Delete(root);
@@ -352,7 +351,7 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
         lista_prenotazioni = lista_prenotazioni->next;
     }
 
-    cJSON* stringa_json = cJSON_Print(root);
+    char* stringa_json = cJSON_Print(root);
     FILE* file = fopen(PATH_FILE_PRENOTAZIONI, "w");
     if(!file){
         fprintf(stderr, "Errore apertura file: %s\n", filepath);
@@ -365,6 +364,39 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
     fclose(file);
     free(stringa_json);
     cJSON_Delete(root);
+    return true;
+}
+
+/*
+  
+  Inserisce ricorsivamente i clienti dell'albero nell'array JSON; la funzione ricorsiva visita in-order(simmetricamente) l'albero
+
+  @param NodoAlbero* nodo
+  @param cJSON* array_json
+
+  -Pre: array_json != NULL
+
+  @return I clienti vengono aggiunti all'array JSON.
+*/
+static void aggiung_clienti_array_json(const NodoAlbero* nodo, cJSON* array_json){
+
+    if(nodo == NULL){
+        return;
+    }
+    aggiung_clienti_array_json(nodo->sx, array_json);
+
+    cJSON* cliente_json =cJSON_CreateObject();
+    cJSON_AddStringToObject(cliente_json, "nome", nodo->cliente.nome);
+    cJSON_AddStringToObject(cliente_json, "cognome", nodo->cliente.cognome);
+    cJSON_AddStringToObject(cliente_json, "codice_fiscale", nodo->cliente.codice_fiscale);
+    cJSON_AddStringToObject(cliente_json, "data_nascita", nodo->cliente.data_nascita);
+    cJSON_AddNumberToObject(cliente_json, "data_inizio", (double)nodo->cliente.data_inizio);
+    cJSON_AddNumberToObject(cliente_json, "durata", nodo->cliente.durata);
+    cJSON_AddNumberToObject(cliente_json, "id_abbonamento", nodo->cliente.id_abbonamento);
+
+    cJSON_AddItemToArray(array_json, cliente_json);
+
+    aggiung_clienti_array_json(nodo->dx, array_json);
 }
 
 /*
@@ -384,7 +416,7 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
 
     aggiung_clienti_array_json(nodo, root);
 
-    cJSON* stringa_json = cJSON_Print(root);
+    char* stringa_json = cJSON_Print(root);
     FILE* file = fopen(PATH_FILE_ABBONAMENTI, "w");
     if(!file){
         fprintf(stderr, "Errore apertura file: %s\n", filepath);
@@ -397,6 +429,7 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
     fclose(file);
     free(stringa_json);
     cJSON_Delete(root);
+    return true;
 }
 
 
@@ -417,7 +450,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     if(strcmp(tipo, "cliente") == 0){
         path = PATH_FILE_ABBONAMENTI;
     }
-    else if(strcmp(tipo, "lezione" == 0)){
+    else if(strcmp(tipo, "lezione") == 0){
         path = PATH_FILE_LEZIONI;
     }
     else if(strcmp(tipo, "prenotazione") == 0){
@@ -456,7 +489,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     cJSON_ArrayForEach(item, root){
         cJSON* id_json = cJSON_GetObjectItem(item, "ID");
 
-        if(id_json && cJSON_IsNumber(id_json) && id_json->valueint == id){
+        if(id_json && cJSON_IsNumber(id_json) && (unsigned int)id_json->valueint == id){
 
             cJSON_DeleteItemFromArray(root, indice);
             elemento_trovato = true;
@@ -475,13 +508,13 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
 
     char* contenuto_aggiornato = cJSON_Print(root);
 
-    FILE* file = fopen(path, "w");
+    file = fopen(path, "w");
     if(!file){
         fprintf(stderr, "Errore apertura file: %s\n", path);
         return;
     }
 
-    fprintf(file, contenuto_aggiornato);
+    fprintf(file,"%s", contenuto_aggiornato);
 
     free(contenuto_aggiornato);
     fclose(file);
@@ -490,34 +523,3 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
 
 }
 
-/*
-  
-  Inserisce ricorsivamente i clienti dell'albero nell'array JSON; la funzione ricorsiva visita in-order(simmetricamente) l'albero
-
-  @param NodoAlbero* nodo
-  @param cJSON* array_json
-
-  -Pre: array_json != NULL
-
-  @return I clienti vengono aggiunti all'array JSON.
-*/
-static void aggiung_clienti_array_json(const NodoAlbero* nodo, cJSON* array_json){
-
-    if(nodo == NULL){
-        return;
-    }
-    aggiung_clienti_array_json(nodo->sx, array_json);
-
-    cJSON* cliente_json =cJSON_CreateObject();
-    cJSON_AddStringToObject(cliente_json, "nome", nodo->cliente.nome);
-    cJSON_AddStringToObject(cliente_json, "cognome", nodo->cliente.cognome);
-    cJSON_AddStringToObject(cliente_json, "codice_fiscale", nodo->cliente.codice_fiscale);
-    cJSON_AddStringToObject(cliente_json, "data_nascita", nodo->cliente.data_nascita);
-    cJSON_AddNumberToObject(cliente_json, "data_inizio", (double)nodo->cliente.data_inizio);
-    cJSON_AddNumberToObject(cliente_json, "durata", nodo->cliente.durata);
-    cJSON_AddNumberToObject(cliente_json, "id_abbonamento", nodo->cliente.id_abbonamento);
-
-    cJSON_AddItemToArray(array_json, cliente_json);
-
-    aggiung_clienti_array_json(nodo->dx, array_json);
-}

@@ -13,15 +13,15 @@
 #include <stdbool.h>
 #include "Prenotazione.h"
 // Struttura rappresentante un nodo della lista collegata
-typedef struct{
+typedef struct NodoPrenotazione {
     Prenotazione prenotazione;
-    struct nodo_prenotazione* next;
+    struct NodoPrenotazione* next;
 } NodoPrenotazione;
 
 typedef NodoPrenotazione* Lista_Prenotazioni;
 
-Lista_Prenotazioni crea_lista_prenotazioni();
-void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione);
+Lista_Prenotazioni* crea_lista_prenotazioni();
+bool aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione);
 bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione);
 void visualizza_prenotazioni(const Lista_Prenotazioni lista);
 void libera_lista_prenotazioni(Lista_Prenotazioni* lista);

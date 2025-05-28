@@ -21,7 +21,7 @@ Crea una nuova lista di prenotazioni vuota
 
   @return riporta una lista vuota
  */
-Lista_Prenotazioni crea_lista_prenotazioni(){
+Lista_Prenotazioni* crea_lista_prenotazioni(){
     return NULL;
 }
 
@@ -38,25 +38,25 @@ Lista_Prenotazioni crea_lista_prenotazioni(){
 
    @result prenotazione aggiunta in coda alla lista
  */
-void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione){
+bool aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione){
 
     
     if(lezione_piena(*lista, prenotazione.lezione)){
         fprintf(stderr, "La lezione selezionata ha raggiunto il numero massimo di partecipanti. \n");
-        return;
+        return false;
     }
 
     
     if(controllo_conflitto_orario(*lista, prenotazione.lezione, prenotazione.partecipante)){
         fprintf(stderr, "Utente già prenotato.\n");
-        return;
+        return false;
     } 
 
     
     NodoPrenotazione* nuovo_nodo = (NodoPrenotazione*)malloc(sizeof(NodoPrenotazione));
     if(nuovo_nodo == NULL){
         fprintf(stderr, "Errore di allocazione memoria!!\n");
-        return;
+        return false;
     }
     
     
@@ -76,6 +76,9 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
         nodo_corrente->next = nuovo_nodo; 
         
     }
+
+    return true;
+
 }
 
 /*
@@ -290,7 +293,7 @@ bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione le
  */
 Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
 
-    if(lista == NULL || &lezione == NULL || &partecipante == NULL){printf("Prenotazione non trovata\n"); return NULL;}
+    if(lista == NULL){printf("Prenotazione non trovata\n"); return NULL;}
        
     NodoPrenotazione* nodo_corrente = lista;
 

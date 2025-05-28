@@ -202,7 +202,7 @@ void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) 
  * @param radice Puntatore alla radice dell'albero.
  * @return Puntatore al nodo con il valore minimo.
  */
-NodoAlbero* trova_minimo(NodoAlbero* nodo) {
+static NodoAlbero* trova_minimo(NodoAlbero* nodo) {
     while (nodo->sx != NULL)
         nodo = nodo->sx;
     return nodo;
@@ -215,7 +215,6 @@ NodoAlbero* trova_minimo(NodoAlbero* nodo) {
  * @param codice_fiscale Codice fiscale del cliente da eliminare.
  * @return La nuova radice dell'albero dopo l'eliminazione.
  */
-
 NodoAlbero* elimina_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     if (radice == NULL)
         return NULL;

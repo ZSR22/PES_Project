@@ -26,8 +26,8 @@ Pre: orario valido
 Orario_Tm* converti_orario_in_struct_tm(time_t orario){
     
     Orario_Tm* struttura_orario = localtime(&orario);
-    struttura_orario->tm_mon + 1;
-    struttura_orario->tm_year + 1900;
+    struttura_orario->tm_mon += 1;
+    struttura_orario->tm_year += 1900;
     return struttura_orario;
 }
 
@@ -95,11 +95,11 @@ unsigned int genera_id_univoco(const char* filepath){
         return (unsigned int)(time(NULL) ^ rand());
     }
 
-    unsigned int id;
+    unsigned int id = time(NULL) ^ rand();
     bool univoco = false;
 
     while(!univoco){
-        unsigned int id = time(NULL) ^ rand();
+        
         univoco = true;
         
         int contatore_item = cJSON_GetArraySize(root);

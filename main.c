@@ -173,16 +173,27 @@ int main(){
         nuova_prenotazione.ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
         nuova_prenotazione.lezione = *lezione_trovata;
         nuova_prenotazione.partecipante = cliente_trovato->cliente;
-        nuova_prenotazione.lezione = *lezione_trovata;
+        nuova_prenotazione.lezione.max_posti -= 1;
 
-        aggiungi_prenotazione(lista, nuova_prenotazione);
+        bool prenotazione_aggiunta = aggiungi_prenotazione(lista, nuova_prenotazione);
 
-        bool prenotazione_salvata_su_file = salva_prenotazioni_su_file(lista, PATH_FILE_PRENOTAZIONI);
-        if(prenotazione_salvata_su_file){
-          printf("Prenotazione salvata su file\n");
-        } else{
-          printf("Errore salvataggio su file.\n");
+        if(prenotazione_aggiunta){
+
+          lezione_trovata->max_posti--;
+          bool prenotazione_salvata_su_file = salva_prenotazioni_su_file(*lista, PATH_FILE_PRENOTAZIONI);
+          bool lezione_aggiornata = salva_lezioni_su_file(&catalogo, PATH_FILE_LEZIONI);
+          if(prenotazione_salvata_su_file && lezione_aggiornata){
+            printf("Prenotazione salvata su file e lezione aggiornata\n");
+          } else{
+            printf("Errore salvataggio su file.\n");
+          }
+          
+          
+
         }
+        
+
+        
         attendi_utente();
         break;
 
@@ -192,7 +203,7 @@ int main(){
       
       
       case 5:{
-        visualizza_prenotazioni(lista);
+        visualizza_prenotazioni(*lista);
         attendi_utente();
         break;
 
@@ -263,13 +274,14 @@ int main(){
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
 
-        Cliente* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
+        NodoAlbero* nodo_cliente_trovato = ricerca_cliente(radice, codice_fiscale);
+        
 
-        if(cliente_trovato != NULL){
+        if(nodo_cliente_trovato != NULL){
 
-          radice = elimina_cliente(cliente_trovato, codice_fiscale);
+          radice = elimina_cliente(nodo_cliente_trovato, codice_fiscale);
           printf("Cliente eliminato\n");
-          elimina_cliente_da_persistenza(cliente_trovato->id_abbonamento);
+          elimina_cliente_da_persistenza(nodo_cliente_trovato->cliente.id_abbonamento);
           
         } else{
           
@@ -290,8 +302,8 @@ int main(){
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
 
-        Cliente* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
-        if (cliente_trovato == NULL) {
+        NodoAlbero* nodo_cliente_trovato = ricerca_cliente(radice, codice_fiscale);
+        if (nodo_cliente_trovato == NULL) {
             printf("Cliente con codice fiscale %s non trovato.\n", codice_fiscale);
             attendi_utente();
             break;
@@ -308,7 +320,7 @@ int main(){
           break;
         }
 
-        Prenotazione* prenotazione_trovata = trova_prenotazione(lista, *lezione_trovata, *cliente_trovato);
+        Prenotazione* prenotazione_trovata = trova_prenotazione(*lista, *lezione_trovata, nodo_cliente_trovato->cliente);
 
         if(prenotazione_trovata != NULL){
           
@@ -317,8 +329,15 @@ int main(){
           
           if(prenotazione_eliminata){
             
-            printf("Prenotazione eliminata\n");
-            elimina_prenotazione_da_persistenza(prenotazione_trovata->ID);
+            lezione_trovata->max_posti++;
+            bool lezione_aggiornata = salva_lezioni_su_file(&catalogo, PATH_FILE_LEZIONI);
+            if(lezione_aggiornata){
+
+              elimina_prenotazione_da_persistenza(prenotazione_trovata->ID);
+              printf("Prenotazione eliminata dalla persistenza\n");
+
+            }
+            
             
           } else{
             

@@ -51,7 +51,7 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
  */
 void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione){
     
-    if(catalogo->numero_lezioni >= catalogo->capacità){
+    if(catalogo->numero_lezioni >= (int)catalogo->capacità){
         size_t nuova_capacità = catalogo->capacità * 2;
         Lezione* temp = realloc(catalogo->lezione, nuova_capacità * sizeof(Lezione));
         if(temp == NULL){
@@ -89,7 +89,7 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
     }
 
     int indice = 0;
-    bool lezione_trovata;
+    bool lezione_trovata = false;
     
     for(int i = 0; i < catalogo->numero_lezioni; i++){
         if(catalogo->lezione[i].ID == lezione_da_eliminare.ID && catalogo->lezione[i].data == lezione_da_eliminare.data){
@@ -111,7 +111,7 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
     catalogo->numero_lezioni--;
     memset(&catalogo->lezione[catalogo->numero_lezioni], 0, sizeof(Lezione));
 
-    if(catalogo->numero_lezioni > 0 && catalogo->numero_lezioni < catalogo->capacità / 4){
+    if(catalogo->numero_lezioni > 0 && catalogo->numero_lezioni < (int)catalogo->capacità / 4){
         
         size_t nuova_capacità = catalogo->capacità / 2;
         Lezione* temp = realloc(catalogo->lezione, nuova_capacità * sizeof(Lezione));
@@ -159,7 +159,7 @@ void elimina_catalogo(Catalogo_Lezioni *catalogo){
  */
 void mostra_lezioni(const Catalogo_Lezioni catalogo){
     
-    if(&catalogo == NULL){
+    if(catalogo.numero_lezioni == 0){
         fprintf(stderr, "Catalogo Vuoto \n");
         return;
     }
@@ -191,7 +191,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
   
   @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */
-const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id){
+Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id){
 
     if (catalogo == NULL || catalogo->lezione == NULL || catalogo->numero_lezioni == 0) {
         return NULL;
