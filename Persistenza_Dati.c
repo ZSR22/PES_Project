@@ -15,7 +15,7 @@
 
 /*
 
-  Carica da file JSON l'elenco delle lezioni e le inserisce nel catalogo
+  Alloca memoria per il catalogo, carica da file JSON l'elenco delle lezioni e le inserisce nel catalogo
 
   @param char* filepath
 
@@ -23,10 +23,15 @@
 
   @return Catalogo_Lezioni popolato con i dati letti dal file
 */
-Catalogo_Lezioni carica_catalogo_da_file(const char* filepath){
+Catalogo_Lezioni* carica_catalogo_da_file(const char* filepath){
 
-    Catalogo_Lezioni catalogo;
-    inizializza_catalogo(&catalogo);
+    Catalogo_Lezioni* catalogo = malloc(sizeof(Catalogo_Lezioni));
+    if (!catalogo) {
+        fprintf(stderr, "Errore allocazione memoria per catalogo\n");
+        return NULL;
+    }
+    
+    inizializza_catalogo(catalogo);
 
     FILE* file = fopen(filepath, "r");
     if(!file){fprintf(stderr, "Errore apertura file: %s\n", filepath); return catalogo;}
@@ -74,7 +79,7 @@ Catalogo_Lezioni carica_catalogo_da_file(const char* filepath){
         }
 
 
-        aggiungi_lezione(&catalogo, lezione);
+        aggiungi_lezione(catalogo, lezione);
     }
     
     cJSON_Delete(root);
@@ -132,7 +137,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
             cJSON* nome_p = cJSON_GetObjectItem(struttura_cliente, "nome");
             cJSON* cognome_p = cJSON_GetObjectItem(struttura_cliente, "cognome");
             cJSON* codice_fiscale_p = cJSON_GetObjectItem(item, "codice_fiscale");
-            cJSON* data_nascita_p = cJSON_GetObjectItem(item, "data_di_nascita");
+            cJSON* data_nascita_p = cJSON_GetObjectItem(item, "data_nascita");
             cJSON* data_inizio_p = cJSON_GetObjectItem(item, "data_inizio_abbonamento");
             cJSON* durata_p = cJSON_GetObjectItem(item, "durata");
             cJSON* id_abbonamento_p = cJSON_GetObjectItem(item, "id_abbonamento");
@@ -228,8 +233,8 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
         cJSON* nome = cJSON_GetObjectItem(item, "nome");
         cJSON* cognome = cJSON_GetObjectItem(item, "cognome");
         cJSON* codice_fiscale = cJSON_GetObjectItem(item, "codice_fiscale");
-        cJSON* data_nascita = cJSON_GetObjectItem(item, "data_di_nascita");
-        cJSON* data_inizio = cJSON_GetObjectItem(item, "data_inizio_abbonamento");
+        cJSON* data_nascita = cJSON_GetObjectItem(item, "data_nascita");
+        cJSON* data_inizio = cJSON_GetObjectItem(item, "data_inizio");
         cJSON* durata = cJSON_GetObjectItem(item, "durata");
         cJSON* id_abbonamento = cJSON_GetObjectItem(item, "id_abbonamento");
 
@@ -379,10 +384,11 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
   @return I clienti vengono aggiunti all'array JSON.
 */
 static void aggiung_clienti_array_json(const NodoAlbero* nodo, cJSON* array_json){
-
+ 
     if(nodo == NULL){
         return;
     }
+
     aggiung_clienti_array_json(nodo->sx, array_json);
 
     cJSON* cliente_json =cJSON_CreateObject();
@@ -487,7 +493,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     int indice = 0;
     cJSON* item = NULL;
     cJSON_ArrayForEach(item, root){
-        cJSON* id_json = cJSON_GetObjectItem(item, "ID");
+        cJSON* id_json = cJSON_GetObjectItem(item, "id_abbonamento");
 
         if(id_json && cJSON_IsNumber(id_json) && (unsigned int)id_json->valueint == id){
 

@@ -15,7 +15,7 @@
 // lunghezza stringa nome e cognome
 #define MAX_CHAR 20
 // lunghezza stringa codice fiscale
-#define MAX_CF 16
+#define MAX_CF 17
 // lunghezza stringa data nascita
 #define MAX_DN 11
 

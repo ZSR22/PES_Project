@@ -128,7 +128,7 @@ unsigned int genera_id_univoco(const char* filepath){
 
   -Pre: filepath valido
 
-  @return true se il file è vuoto o non apribile, false altrimenti
+  @return true se il file è vuoto, false se esiste ed è vuoto o contiene elementi
 
 */
 bool file_vuoto(char* filepath){
@@ -136,8 +136,17 @@ bool file_vuoto(char* filepath){
   FILE* file = fopen(filepath,"r");
   if(!file) return true;
 
-  char carattere = getc(file);
+  fseek(file, 0, SEEK_END);
+  long size = ftell(file);
   fclose(file);
+
+  if(size == 0){
+    
+    return false;
+
+  }
   
-  return carattere == EOF;
+  
+  return false;
+
 }

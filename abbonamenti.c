@@ -40,6 +40,7 @@ NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     nuovo->cliente = c;
     nuovo->sx = NULL;
     nuovo->dx = NULL;
+    printf("===========================\n");
     printf("Cliente %s %s è stato salvato con successo\n", c.nome, c.cognome);
     return nuovo;
 }
@@ -77,7 +78,11 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
     } else if (cmp > 0) {
         radice->dx = inserisci_cliente(radice->dx, c);
     } else {
-        fprintf(stderr, "ID abbonamento già esistente\n");
+        printf("===========================\n");
+        printf("\n");
+        fprintf(stderr, "Codice fiscale già in uso\n");
+        printf("\n");
+        return NULL;
     }
     return radice;
 }
@@ -121,14 +126,19 @@ int abbonamento_valido(Cliente c) {
  */
 
 void stampa_clienti_ordinati(NodoAlbero* radice) {
-    if (radice != NULL) {
-        stampa_clienti_ordinati(radice->sx);
-        printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n", radice->cliente.nome, radice->cliente.cognome, radice->cliente.id_abbonamento, abbonamento_valido(radice->cliente) ? "SI" : "NO");
-        stampa_clienti_ordinati(radice->dx);
-    }else {
-        fprintf(stderr, "Nessun cliente trovato\n");
-    }
-    return;
+
+    if(radice == NULL){ return;}
+    stampa_clienti_ordinati(radice->sx);
+
+    printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n",
+        radice->cliente.nome,
+        radice->cliente.cognome,
+        radice->cliente.id_abbonamento,
+        abbonamento_valido(radice->cliente) ? "SI" : "NO");
+
+    stampa_clienti_ordinati(radice->dx);
+    
+        
 }
 /**
  * Cancella ricorsivamente tutti i nodi dell'albero binario di ricerca.

@@ -32,7 +32,11 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
     
     catalogo->capacità = CAPACITÀ_INIZIALE;
     catalogo->numero_lezioni = 0;
-    catalogo->lezione = malloc(sizeof(Lezione) * catalogo->capacità);
+    catalogo->lezione = malloc(catalogo->capacità * sizeof(Lezione));
+    if (catalogo->lezione == NULL) {
+        fprintf(stderr, "Errore di allocazione memoria per il catalogo lezioni\n");
+        return;
+    }
     
 }
 
@@ -138,10 +142,14 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
 */
 void elimina_catalogo(Catalogo_Lezioni *catalogo){
 
-    free(catalogo->lezione);
-    catalogo->lezione = NULL;
-    catalogo->numero_lezioni = 0;
-    catalogo->capacità = 0;
+    if(catalogo->lezione != NULL){
+        
+        free(catalogo->lezione);
+        catalogo->lezione = NULL;
+        catalogo->numero_lezioni = 0;
+        catalogo->capacità = 0;
+    }
+    
 
 }
 
@@ -160,6 +168,7 @@ void elimina_catalogo(Catalogo_Lezioni *catalogo){
 void mostra_lezioni(const Catalogo_Lezioni catalogo){
     
     if(catalogo.numero_lezioni == 0){
+        fprintf(stderr, "\n");
         fprintf(stderr, "Catalogo Vuoto \n");
         return;
     }

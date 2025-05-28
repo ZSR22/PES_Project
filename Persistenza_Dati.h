@@ -21,7 +21,7 @@
 
 
 
-Catalogo_Lezioni carica_catalogo_da_file(const char* filepath);
+Catalogo_Lezioni* carica_catalogo_da_file(const char* filepath);
 void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista);
 void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST);
 
@@ -33,9 +33,9 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath);
 void elimina_elem_da_persistenza(const char* tipo, const unsigned int id);
 
 // Queste macro fungono da alias per la funzione elimina_elem_da_persistenza
-#define elimina_cliente_da_persistenza(id) elimina_elem_da_persistenza("cliente", id)
-#define elimina_lezione_da_persistenza(id) elimina_elem_da_persistenza("lezione", id)
-#define elimina_prenotazione_da_persistenza(id) elimina_elem_da_persistenza("prenotazione", id)
+#define elimina_cliente_da_persistenza(id) elimina_elem_da_persistenza("cliente", (id))
+#define elimina_lezione_da_persistenza(id) elimina_elem_da_persistenza("lezione", (id))
+#define elimina_prenotazione_da_persistenza(id) elimina_elem_da_persistenza("prenotazione", (id))
 
 
 
