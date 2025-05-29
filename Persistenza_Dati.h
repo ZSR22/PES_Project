@@ -19,6 +19,10 @@
 #define PATH_FILE_PRENOTAZIONI "persistenza_dati/Prenotazioni.json"
 #define PATH_FILE_ABBONAMENTI "persistenza_dati/Clienti.json"
 
+#define ID_ABBONAMENTO_JSON "id_abbonamento"
+#define ID_PRENOTAZIONE_JSON "id_prenotazione"
+#define ID_LEZIONE_JSON "id_lezione"
+
 
 
 Catalogo_Lezioni* carica_catalogo_da_file(const char* filepath);

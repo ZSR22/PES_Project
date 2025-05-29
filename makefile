@@ -1,11 +1,11 @@
 # Nome del progetto
-TARGET = PES_Project
+TARGET = SGP
 
 # Compilatore
 CC = gcc
 
 # Opzioni di compilazione
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra -std=c11 -g
 
 # Librerie da collegare (vuoto perché linkiamo staticamente)
 LDLIBS =

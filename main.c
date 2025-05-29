@@ -103,7 +103,7 @@ int main(){
   NodoAlbero* radice = NULL;
   int scelta;
   Catalogo_Lezioni* catalogo = NULL;
-  Lista_Prenotazioni* lista = crea_lista_prenotazioni();
+  Lista_Prenotazioni *lista = crea_lista_prenotazioni();
 
   if(!file_vuoto(PATH_FILE_ABBONAMENTI)){
     carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
@@ -182,9 +182,14 @@ int main(){
       
       case 2:{
         if(radice == NULL){
+          
+          fprintf(stderr, "\n");
           fprintf(stderr, "Nessun cliente trovato\n");
-        } else{
-            stampa_clienti_ordinati(radice);
+        } else{ 
+          printf("===========================\n");
+          printf("\n");
+          stampa_clienti_ordinati(radice);
+          printf("===========================\n");
           }
         
         attendi_utente();
@@ -201,6 +206,7 @@ int main(){
         printf("Inserisci codice fiscale da cercare:");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+
 
         NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
         if (nodo_trovato != NULL) {
@@ -225,39 +231,63 @@ int main(){
         
         char codice_fiscale[MAX_CF];
         printf("Inserisci codice fiscale: ");
-        fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
+        fgets(codice_fiscale, MAX_CF, stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
 
         NodoAlbero* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
         if (cliente_trovato == NULL) {
-          printf("Cliente non trovato.\n");
+          
+          printf("\n");
+          fprintf(stderr, "Cliente non trovato.\n");
+          attendi_utente();
           break;
+
         }
         if (!abbonamento_valido(cliente_trovato->cliente)) {
+          
+          printf("\n");
           printf("Abbonamento non valido.\n");
           attendi_utente();
           break;
+
         }
         
+        printf("\n");
+
+        printf("Cliente trovato: %s %s", cliente_trovato->cliente.nome, cliente_trovato->cliente.cognome);
+        printf("\n");
+        printf("===========================\n");
+
         mostra_lezioni(*catalogo);
 
         unsigned int id_inserito;
+        printf("\n");
         printf("Inserisci id lezione: ");
         scanf("%u", &id_inserito);
         pulisci_input();
 
-        Lezione* lezione_trovata = trova_lezione(catalogo, id_inserito);
-        if(lezione_trovata == NULL){
-          printf("Lezione non trovata.\n");
+
+        if(catalogo == NULL){
+          printf("catalogo vuoto\n");
           attendi_utente();
           break;
         }
+
+        Lezione* lezione_trovata = trova_lezione(catalogo, id_inserito);
+
+        if(lezione_trovata == NULL){
+
+          fprintf(stderr, "Lezione non trovata\n");
+
+          attendi_utente();
+          break;
+        }
+        
 
         Prenotazione nuova_prenotazione;
         nuova_prenotazione.ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
         nuova_prenotazione.lezione = *lezione_trovata;
         nuova_prenotazione.partecipante = cliente_trovato->cliente;
-        nuova_prenotazione.lezione.max_posti -= 1;
 
         bool prenotazione_aggiunta = aggiungi_prenotazione(lista, nuova_prenotazione);
 
@@ -267,6 +297,7 @@ int main(){
           bool prenotazione_salvata_su_file = salva_prenotazioni_su_file(*lista, PATH_FILE_PRENOTAZIONI);
           bool lezione_aggiornata = salva_lezioni_su_file(catalogo, PATH_FILE_LEZIONI);
           if(prenotazione_salvata_su_file && lezione_aggiornata){
+            printf("\n");
             printf("Prenotazione salvata su file e lezione aggiornata\n");
           } else{
             printf("Errore salvataggio su file.\n");
@@ -277,7 +308,6 @@ int main(){
         }
         
 
-        
         attendi_utente();
         break;
 
@@ -288,7 +318,8 @@ int main(){
       
       case 5:{
         
-        visualizza_prenotazioni(*lista);
+        printf("===========================\n");
+        visualizza_prenotazioni(lista);
         attendi_utente();
         break;
 
@@ -300,15 +331,13 @@ int main(){
       case 6:{
         
         Lezione nuova_lezione;
-        char nome[MAX_NOME];
         int giorno, mese, anno , ora, minuto; 
         
         nuova_lezione.ID = genera_id_univoco(PATH_FILE_LEZIONI);
         
         printf("Inserisci il nome della lezione: ");
         fgets(nuova_lezione.nome, MAX_NOME, stdin);
-        nome[strcspn(nome, "\n")] = '\0';
-        strncpy(nuova_lezione.nome, nome, MAX_NOME);
+        nuova_lezione.nome[strcspn(nuova_lezione.nome, "\n")] = '\0';      
 
         printf("Inserisci il numero massimo di posti: ");
         scanf("%d", &nuova_lezione.max_posti);
@@ -320,8 +349,13 @@ int main(){
 
         Orario_Tm tm_orario;
         nuova_lezione.data = converti_orario_in_time_t(&tm_orario, giorno, mese, anno, ora, minuto);
+        
+        printf("\n");
         if(conflitto_orario_lezione(catalogo, nuova_lezione.data)){
+          
+          printf("\n");
           printf("Esiste già una lezione a questo orario\n");
+          attendi_utente();
           break;
         }
 
@@ -329,7 +363,7 @@ int main(){
 
         bool lezione_salvata_su_file = salva_lezioni_su_file(catalogo, PATH_FILE_LEZIONI);
         if(lezione_salvata_su_file){
-          printf("Lezione salvata su file\n");
+          printf("Lezione salvata con successo\n");
         } else{
           printf("Errore salvataggio su file.\n");
         }
@@ -345,6 +379,8 @@ int main(){
       
       case 7:{
         
+        printf("\n");
+        printf("===========================\n");
         mostra_lezioni(*catalogo);
         attendi_utente();
         break;
@@ -365,6 +401,11 @@ int main(){
 
         if(nodo_cliente_trovato != NULL){
 
+          if(cliente_prenotato(*lista, nodo_cliente_trovato->cliente)){
+            printf("Non puoi eliminare un cliente con prenotazione attiva\n");
+            attendi_utente();
+            break;
+          }
           unsigned int id_cliente = nodo_cliente_trovato->cliente.id_abbonamento;
           radice = elimina_cliente(nodo_cliente_trovato, codice_fiscale);
           printf("Cliente eliminato\n");
@@ -414,6 +455,7 @@ int main(){
 
         if(prenotazione_trovata != NULL){
           
+          unsigned int id_prenotazione_trovato = prenotazione_trovata->ID;
           bool prenotazione_eliminata = disdici_prenotazione(lista, lezione_trovata);
           
           
@@ -423,7 +465,7 @@ int main(){
             bool lezione_aggiornata = salva_lezioni_su_file(catalogo, PATH_FILE_LEZIONI);
             if(lezione_aggiornata){
 
-              elimina_prenotazione_da_persistenza(prenotazione_trovata->ID);
+              elimina_prenotazione_da_persistenza(id_prenotazione_trovato);
               printf("Prenotazione eliminata dalla persistenza\n");
 
             }
@@ -458,12 +500,24 @@ int main(){
         Lezione* lezione_trovata = trova_lezione(catalogo, id_lezione);
         if (lezione_trovata != NULL) {
             
+          unsigned int id_lezione_trovato = lezione_trovata->ID;
+
+          
+          if(lezione_prenotata(*lista, *lezione_trovata)){
+            
+            printf("La lezione ha dei partecipanti prenotati\n");
+            attendi_utente();
+            break;
+          }
           elimina_lezione(catalogo, *lezione_trovata);
-          elimina_lezione_da_persistenza(lezione_trovata->ID);
+          printf("\n");
+          elimina_lezione_da_persistenza(id_lezione_trovato);
+          printf("\n");
           printf("Lezione eliminata con successo.\n");
 
         }else{
-            
+          
+          printf("\n");
           printf("Lezione non trovata.\n");
         
         }
@@ -479,6 +533,8 @@ int main(){
       }
       
       case 0:{
+        
+        printf("\n");
         printf("Arrivederci!\n");
         if (radice != NULL) libera_clienti(radice);
         if (lista != NULL) libera_lista_prenotazioni(lista);

@@ -128,16 +128,16 @@ int abbonamento_valido(Cliente c) {
 void stampa_clienti_ordinati(NodoAlbero* radice) {
 
     if(radice == NULL){ return;}
+
     stampa_clienti_ordinati(radice->sx);
 
-    printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n",
+    printf("Nome: %s\n Cognome: %s\n ID: %u\n Valido:%s\n",
         radice->cliente.nome,
         radice->cliente.cognome,
         radice->cliente.id_abbonamento,
         abbonamento_valido(radice->cliente) ? "SI" : "NO");
-
-    stampa_clienti_ordinati(radice->dx);
-    
+    printf("\n");
+    stampa_clienti_ordinati(radice->dx);   
         
 }
 /**

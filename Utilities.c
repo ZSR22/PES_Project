@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "Utilities.h"
 #include "cJSON.h"
 /*
@@ -49,15 +50,18 @@ Orario_Tm* converti_orario_in_struct_tm(time_t orario){
 */
 time_t converti_orario_in_time_t(Orario_Tm* tm_orario, int giorno, int mese, int anno, int ora, int minuto){
     
+    memset(tm_orario, 0, sizeof(Orario_Tm));
     tm_orario->tm_mday = giorno;
     tm_orario->tm_mon = mese - 1;
     tm_orario->tm_year = anno - 1900;
     tm_orario->tm_hour = ora;
     tm_orario->tm_min = minuto;
+    tm_orario->tm_sec = 0;
+    tm_orario->tm_isdst = -1;
 
-    time_t time_orario = mktime(tm_orario);
+    
 
-    return time_orario;
+    return mktime(tm_orario);
 }
 
 /*

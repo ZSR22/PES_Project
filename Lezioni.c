@@ -177,14 +177,14 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
 
         Orario_Tm* data = converti_orario_in_struct_tm(catalogo.lezione[i].data);
         
-        printf("ID:%u\n, lezione:%s\n, numero di posti: %d\n, data:%02d/%02d/%04d--%02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
+        printf("\nID: %u\n nome: %s\n numero di posti: %d\n data: %02d/%02d/%04d -- %02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
         data->tm_mday,
         data->tm_mon,
         data->tm_year,
         data->tm_hour,
         data->tm_min);
 
-        printf("======================================");
+        printf("===========================");
     }
 }
 /*

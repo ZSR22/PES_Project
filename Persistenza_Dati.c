@@ -57,7 +57,7 @@ Catalogo_Lezioni* carica_catalogo_da_file(const char* filepath){
         cJSON* item = cJSON_GetArrayItem(root, i);
 
         Lezione lezione;
-        cJSON* id = cJSON_GetObjectItem(item, "ID");
+        cJSON* id = cJSON_GetObjectItem(item, ID_LEZIONE_JSON);
         cJSON* nome = cJSON_GetObjectItem(item, "nome");
         cJSON* posti = cJSON_GetObjectItem(item, "max_posti");
         cJSON* data = cJSON_GetObjectItem(item, "data");
@@ -124,7 +124,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
         cJSON* item =cJSON_GetArrayItem(root, i);
         Prenotazione prenotazione;
 
-        cJSON* id = cJSON_GetObjectItem(item, "ID");
+        cJSON* id = cJSON_GetObjectItem(item, ID_PRENOTAZIONE_JSON);
         cJSON* struttura_cliente = cJSON_GetObjectItem(item, "partecipante");
         cJSON* struttura_lezione = cJSON_GetObjectItem(item, "lezione");
 
@@ -140,7 +140,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
             cJSON* data_nascita_p = cJSON_GetObjectItem(item, "data_nascita");
             cJSON* data_inizio_p = cJSON_GetObjectItem(item, "data_inizio_abbonamento");
             cJSON* durata_p = cJSON_GetObjectItem(item, "durata");
-            cJSON* id_abbonamento_p = cJSON_GetObjectItem(item, "id_abbonamento");
+            cJSON* id_abbonamento_p = cJSON_GetObjectItem(item, ID_ABBONAMENTO_JSON);
 
             if(cJSON_IsString(nome_p)){
                 strncpy(prenotazione.partecipante.nome, nome_p->valuestring, MAX_CHAR);
@@ -167,7 +167,7 @@ void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista
 
         if(cJSON_IsObject(struttura_lezione)){
 
-            cJSON* id_lezione = cJSON_GetObjectItem(struttura_lezione, "ID");
+            cJSON* id_lezione = cJSON_GetObjectItem(struttura_lezione, ID_LEZIONE_JSON);
             cJSON* nome_lezione = cJSON_GetObjectItem(struttura_lezione, "nome");
             cJSON* max_posti_lezione = cJSON_GetObjectItem(struttura_lezione, "max_posti");
             cJSON* data_lezione = cJSON_GetObjectItem(struttura_lezione, "data");
@@ -236,7 +236,7 @@ void carica_abbonamenti_da_file(const char* filepath, NodoAlbero** radice_BST){
         cJSON* data_nascita = cJSON_GetObjectItem(item, "data_nascita");
         cJSON* data_inizio = cJSON_GetObjectItem(item, "data_inizio");
         cJSON* durata = cJSON_GetObjectItem(item, "durata");
-        cJSON* id_abbonamento = cJSON_GetObjectItem(item, "id_abbonamento");
+        cJSON* id_abbonamento = cJSON_GetObjectItem(item, ID_ABBONAMENTO_JSON);
 
         if(cJSON_IsString(nome)){
             strncpy(cliente.nome, nome->valuestring, sizeof(cliente.nome));
@@ -288,7 +288,7 @@ bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepat
         Lezione lezione = catalogo->lezione[i];
         cJSON* struttura_lezione = cJSON_CreateObject();
 
-        cJSON_AddNumberToObject(struttura_lezione, "ID", lezione.ID);
+        cJSON_AddNumberToObject(struttura_lezione, ID_LEZIONE_JSON, lezione.ID);
         cJSON_AddStringToObject(struttura_lezione, "nome", lezione.nome);
         cJSON_AddNumberToObject(struttura_lezione, "max_posti", lezione.max_posti);
         cJSON_AddNumberToObject(struttura_lezione, "data", (double)lezione.data);
@@ -332,7 +332,7 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
     while(lista_prenotazioni != NULL){
         
         cJSON* prenotazione_json = cJSON_CreateObject();
-        cJSON_AddNumberToObject(prenotazione_json, "ID", lista_prenotazioni->prenotazione.ID);
+        cJSON_AddNumberToObject(prenotazione_json, ID_PRENOTAZIONE_JSON, lista_prenotazioni->prenotazione.ID);
         
         cJSON* partecipante_json = cJSON_CreateObject();
         cJSON_AddStringToObject(partecipante_json, "nome", lista_prenotazioni->prenotazione.partecipante.nome);
@@ -341,17 +341,19 @@ bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* file
         cJSON_AddStringToObject(partecipante_json, "data_nascita", lista_prenotazioni->prenotazione.partecipante.data_nascita);
         cJSON_AddNumberToObject(partecipante_json, "durata", lista_prenotazioni->prenotazione.partecipante.durata);
         cJSON_AddNumberToObject(partecipante_json, "data_inizio", (double)lista_prenotazioni->prenotazione.partecipante.data_inizio);
-        cJSON_AddNumberToObject(partecipante_json, "id_abbonamento", lista_prenotazioni->prenotazione.partecipante.id_abbonamento);
+        cJSON_AddNumberToObject(partecipante_json, ID_ABBONAMENTO_JSON, lista_prenotazioni->prenotazione.partecipante.id_abbonamento);
 
-        cJSON_AddItemToArray(root, prenotazione_json);
+        cJSON_AddItemToObject(prenotazione_json, "partecipante", partecipante_json);
 
         cJSON* lezione_json = cJSON_CreateObject();
-        cJSON_AddNumberToObject(lezione_json, "ID", lista_prenotazioni->prenotazione.lezione.ID);
+        cJSON_AddNumberToObject(lezione_json, ID_LEZIONE_JSON, lista_prenotazioni->prenotazione.lezione.ID);
         cJSON_AddStringToObject(lezione_json, "nome", lista_prenotazioni->prenotazione.lezione.nome);
         cJSON_AddNumberToObject(lezione_json, "max_posti", lista_prenotazioni->prenotazione.lezione.max_posti);
         cJSON_AddNumberToObject(lezione_json, "data", (double)lista_prenotazioni->prenotazione.lezione.data);
 
-        cJSON_AddItemToArray(root, lezione_json);
+        cJSON_AddItemToObject(prenotazione_json, "lezione", lezione_json);
+
+        cJSON_AddItemToArray(root, prenotazione_json);
         
         lista_prenotazioni = lista_prenotazioni->next;
     }
@@ -398,7 +400,7 @@ static void aggiung_clienti_array_json(const NodoAlbero* nodo, cJSON* array_json
     cJSON_AddStringToObject(cliente_json, "data_nascita", nodo->cliente.data_nascita);
     cJSON_AddNumberToObject(cliente_json, "data_inizio", (double)nodo->cliente.data_inizio);
     cJSON_AddNumberToObject(cliente_json, "durata", nodo->cliente.durata);
-    cJSON_AddNumberToObject(cliente_json, "id_abbonamento", nodo->cliente.id_abbonamento);
+    cJSON_AddNumberToObject(cliente_json, ID_ABBONAMENTO_JSON, nodo->cliente.id_abbonamento);
 
     cJSON_AddItemToArray(array_json, cliente_json);
 
@@ -452,15 +454,21 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
 void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
 
     const char* path = NULL;
+    
+    // Stringa necessaria per garantire l'universalità tra le varie strutture del programma
+    const char* id_da_trovare = NULL;
 
     if(strcmp(tipo, "cliente") == 0){
         path = PATH_FILE_ABBONAMENTI;
+        id_da_trovare = ID_ABBONAMENTO_JSON;
     }
     else if(strcmp(tipo, "lezione") == 0){
         path = PATH_FILE_LEZIONI;
+        id_da_trovare = ID_LEZIONE_JSON;
     }
     else if(strcmp(tipo, "prenotazione") == 0){
         path = PATH_FILE_PRENOTAZIONI;
+        id_da_trovare = ID_PRENOTAZIONE_JSON;
     }
     else{
         fprintf(stderr, "Tipo inserito non valido\n");
@@ -493,7 +501,7 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     int indice = 0;
     cJSON* item = NULL;
     cJSON_ArrayForEach(item, root){
-        cJSON* id_json = cJSON_GetObjectItem(item, "id_abbonamento");
+        cJSON* id_json = cJSON_GetObjectItem(item, id_da_trovare);
 
         if(id_json && cJSON_IsNumber(id_json) && (unsigned int)id_json->valueint == id){
 
