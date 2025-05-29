@@ -108,7 +108,7 @@ int abbonamento_valido(Cliente c) {
         fprintf(stderr, "Data di inizio non valida\n");
         return 0;
     }
-    return giorni_passati <= c.durata; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
+    return (giorni_passati <= c.durata) ? 1 : 0; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
 }
 /**
  * Stampa i clienti in ordine crescente in base al codice fiscale.

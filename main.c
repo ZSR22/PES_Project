@@ -17,7 +17,18 @@
  * - Ogni modifica alle strutture dati deve aggiornare il file JSON corrispondente
  */
 
+/*
 
+Stampa a video il menu principale dell'applicazione
+
+
+@param nessuna
+
+Pre: nessuna
+
+@result mostrerà su terminale il menu principale dell'applicazione
+
+*/
 void menu(){
   printf("\n==== GESTIONE PALESTRA ====\n");
   printf("1. Inserisci cliente\n");
@@ -36,13 +47,35 @@ void menu(){
   printf("Scegli un'opzione: ");
 }
 
+/*
+
+Pulisce l'input del buffer per evitare problemi con fgets dopo scanf
+
+
+@param nessuno
+
+Pre: nessuna
+
+@result rimuove eventuali caratteri residui nel buffer di input
+
+*/
 void pulisci_input(){
     
   int c;
   while ((c = getchar()) != '\n' && c != EOF);
 
 }
+/*
 
+Attende l'input dell'utente per continuare l'esecuzione del programma
+
+
+@param nessuno
+
+Pre: nessuna
+
+@result attende che l'utente prema INVIO per continuare
+*/
 void attendi_utente(){
   
   
@@ -53,6 +86,18 @@ void attendi_utente(){
   
 }
 
+/*
+
+Funzione principale del programma che gestisce l'interazione con l'utente e le operazioni di gestione della palestra
+
+
+@param nessuno
+
+Pre: nessuna
+
+@result gestisce l'interazione con l'utente, le operazioni di inserimento, ricerca, prenotazione e visualizzazione dei clienti, lezioni e prenotazioni
+
+*/
 int main(){
   
   NodoAlbero* radice = NULL;
