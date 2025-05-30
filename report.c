@@ -16,21 +16,22 @@
 
 
 /*
- * Genera un report mensile delle prenotazioni e delle lezioni più frequentate.
- * 
- * Stampa il report su console e ne salva una versione in formato JSON su file.
- *
- * @param lista Puntatore alla lista delle prenotazioni.
- * @param catalogo* Puntatore al catalogo delle lezioni.
- * 
- *  Precondizione:
- * - La lista delle prenotazioni e il catalogo delle lezioni != NULL.
- *  
- * side effects:
+   Genera un report mensile delle prenotazioni e delle lezioni più frequentate.
+   
+   Stampa il report su console e ne salva una versione in formato JSON su file.
+ 
+   @param lista Puntatore alla lista delle prenotazioni.
+   @param catalogo* Puntatore al catalogo delle lezioni.
+   
+    Precondizione:
+   - La lista delle prenotazioni e il catalogo delle lezioni != NULL.
+    
+   side effects:
     - Stampa il report mensile sulla console.
     - Alloca memoria dinamica per il conteggio delle prenotazioni per lezione poi liberata al termine.
     - Chiama salva_report_su_file per salvare il report su file JSON.
     - Se il report mensile è stato precendentemente generato, stamperà a video un avviso.
+
  */
 void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo) {
     
