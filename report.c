@@ -11,53 +11,100 @@
 #include <stdlib.h>
 #include <string.h>
 #include "report.h"
-#include "abbonamenti.h"
-#include "Prenotazione.h"
 #include "Persistenza_Dati.h"
-#include "lezioni.h"
-#include "utils.h"
-#include "clienti.h"
+#include "Utilities.h"
 
-/**
- * Genera un report mensile delle prenotazioni e delle lezioni disponibili.
+
+/*
+ * Genera un report mensile delle prenotazioni e delle lezioni più frequentate.
  * 
- * Questa funzione stampa un report mensile che include il numero totale di prenotazioni,
- * le lezioni disponibili e le prenotazioni effettuate. Inoltre, salva il report su un file.
+ * Stampa il report su console e ne salva una versione in formato JSON su file.
  *
  * @param lista Puntatore alla lista delle prenotazioni.
- * @param catalogo Puntatore al catalogo delle lezioni.
- * * Precondizione:
- * - La lista delle prenotazioni e il catalogo delle lezioni non devono essere NULL.
- * * side effects:
- * - Stampa il report mensile sulla console.
- * - Salva il report su un file specificato da PATH_FILE_REPORT.
- * - Se la lista delle prenotazioni o il catalogo delle lezioni sono NULL, stampa un messaggio di errore.
+ * @param catalogo* Puntatore al catalogo delle lezioni.
+ * 
+ *  Precondizione:
+ * - La lista delle prenotazioni e il catalogo delle lezioni != NULL.
+ *  
+ * side effects:
+    - Stampa il report mensile sulla console.
+    - Alloca memoria dinamica per il conteggio delle prenotazioni per lezione poi liberata al termine.
+    - Chiama salva_report_su_file per salvare il report su file JSON.
+    - Se il report mensile è stato precendentemente generato, stamperà a video un avviso.
  */
-void genera_report_mensile(Lista_Prenotazioni* lista, Catalogo_Lezioni* catalogo) {
+void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo) {
+    
     if (lista == NULL || catalogo == NULL) {
-        printf("Nessuna prenotazione o lezione disponibile per generare il report.\n");
+        fprintf(stderr, "Errore: lista o catalogo vuoti.\n");
         return;
     }
 
-    printf("\n==== REPORT MENSILE ====\n");
-    printf("Numero totale di prenotazioni: %d\n", lista->lunghezza);
-    printf("Lezioni disponibili:\n");
+    time_t ora_corrente = time(NULL);
+    Orario_Tm* orario_tm = converti_orario_in_struct_tm(ora_corrente);
+
+    if(report_esistente(orario_tm)){
+        
+        printf("Il report sul mese attuale è stato già generato\n");
+        return;
+
+    }
+
+    int num_prenotazioni = 0;
+    int* conteggio_lezioni = calloc(catalogo->numero_lezioni, sizeof(int));
+    if (conteggio_lezioni == NULL) {
+        fprintf(stderr, "Errore di allocazione memoria per conteggio lezioni.\n");
+        return;
+    }
+
+    // Conta prenotazioni totali e frequenza per ogni lezione
+    NodoPrenotazione* corrente = lista;
+    while (corrente != NULL) {
+        num_prenotazioni++;
+
+        for (int i = 0; i < catalogo->numero_lezioni; i++) {
+            if (catalogo->lezione[i].ID == corrente->prenotazione.lezione.ID) {
+                conteggio_lezioni[i]++;
+                break;
+            }
+        }
+
+        corrente = corrente->next;
+    }
+
+    // Determina il massimo numero di prenotazioni tra le lezioni
+    int max_prenotazioni = 0;
     for (int i = 0; i < catalogo->numero_lezioni; i++) {
-        Lezione* lezione = &catalogo->lezioni[i];
-        printf("ID: %u, Nome: %s, Max Posti: %d\n", lezione->ID, lezione->nome, lezione->max_posti);
+        if (conteggio_lezioni[i] > max_prenotazioni) {
+            max_prenotazioni = conteggio_lezioni[i];
+        }
     }
-    printf("===========================\n");
-    printf("Prenotazioni effettuate:\n");
-    for (int i = 0; i < lista->lunghezza; i++) {
-        Prenotazione* prenotazione = &lista->prenotazioni[i];
-        printf("ID: %u, Lezione: %s, Partecipante: %s %s\n",
-               prenotazione->ID,
-               prenotazione->lezione.nome,
-               prenotazione->partecipante.nome,
-               prenotazione->partecipante.cognome);
+
+    // Stampa il report
+    printf("\n===== REPORT MENSILE =====\n");
+    printf("Totale prenotazioni effettuate: %d\n", num_prenotazioni);
+
+    if (max_prenotazioni > 0) {
+        printf("\nLezioni più frequentate (%d prenotazioni):\n", max_prenotazioni);
+        for (int i = 0; i < catalogo->numero_lezioni; i++) {
+            if (conteggio_lezioni[i] == max_prenotazioni) {
+                printf("- %s (ID: %u)\n",
+                       catalogo->lezione[i].nome,
+                       catalogo->lezione[i].ID);
+            }
+        }
+    } else {
+        printf("\nNessuna lezione ha ancora prenotazioni.\n");
     }
+
+    char nome_file[64];
+    snprintf(nome_file, sizeof(nome_file), "archivio_report/Report_%04d_%02d.json", orario_tm->tm_year, orario_tm->tm_mon);
+
+    if(salva_report_su_file(catalogo, conteggio_lezioni, num_prenotazioni, nome_file, orario_tm)){
+        printf("Report salvato su file: %s\n", nome_file);
+    }
+
     printf("===========================\n");
-    printf("Report generato con successo.\n");
-    salva_report_su_file(lista, catalogo, PATH_FILE_REPORT);
-    printf("Report salvato in %s\n", PATH_FILE_REPORT);
+
+
+    free(conteggio_lezioni);
 }

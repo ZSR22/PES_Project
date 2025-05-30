@@ -34,6 +34,9 @@ bool salva_lezioni_su_file(const Catalogo_Lezioni* catalogo, const char* filepat
 bool salva_prenotazioni_su_file(const Lista_Prenotazioni lista, const char* filepath);
 bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath);
 
+bool salva_report_su_file(const Catalogo_Lezioni* catalogo, const int* conteggi, int num_prenotazioni, const char* path, Orario_Tm* orario);
+bool report_esistente(Orario_Tm* orario);
+
 void elimina_elem_da_persistenza(const char* tipo, const unsigned int id);
 
 // Queste macro fungono da alias per la funzione elimina_elem_da_persistenza

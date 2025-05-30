@@ -5,18 +5,17 @@
 #include "abbonamenti.h"
 #include "Prenotazione.h"
 #include "Persistenza_Dati.h"
+#include "report.h"
 
 
 /*
- * ALL'AVVIO:
- * - Controllare esistenza di file JSON (lezioni.json, prenotazioni.json)
- * - Se esistono: caricare i dati e popolare le strutture dati
- * - Se non esistono: crearli vuoti
- *
- * DURANTE L'ESECUZIONE:
- * - Ogni modifica alle strutture dati deve aggiornare il file JSON corrispondente
- */
-
+  ALL'AVVIO:
+   - Controllare esistenza di file JSON (lezioni.json, prenotazioni.json)
+   - Se esistono: caricare i dati e popolare le strutture dati
+   - Se non esistono: crearli vuoti
+ 
+  DURANTE L'ESECUZIONE:
+     - Ogni modifica alle strutture dati deve aggiornare il file JSON corrispondente
 /*
 
 Stampa a video il menu principale dell'applicazione
@@ -41,7 +40,7 @@ void menu(){
   printf("8. Elimina Cliente\n");
   printf("9. Elimina Prenotazione\n");
   printf("10. Elimina lezione\n");
-  printf("11. Visualizza report mensile\n");
+  printf("11. Visualizza report mensile, NOTA: il file di report è generabile una sola volta per mese\n");
   printf("0. Esci\n");
   printf("===========================\n");
   printf("Scegli un'opzione: ");
@@ -527,7 +526,8 @@ int main(){
         
       }
       case 11: {
-        genera_report_mensile(*lista, numero_prenotazioni);
+        
+        genera_report_mensile(*lista, catalogo);
         attendi_utente();
         break;
       }

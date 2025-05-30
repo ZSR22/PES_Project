@@ -440,6 +440,103 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
     return true;
 }
 
+/*
+
+    Crea un oggetto JSON contenente i dati del report mensile e salva questo oggetto su file nel percorso indicato.
+
+    @param Catalogo_Lezioni* puntatore al catalogo lezioni.
+    @param int* array contenente il conteggio delle prenotazioni per ogni lezione.
+    @param int  numero totale di prenotazioni effettuate nel mese.
+    @param char* nome del file JSON dove salvare il report.
+    @param Orario_tm* struttura contenente anno e mese per il report.
+
+    -Pre:
+    catalogo, conteggio_lezioni, path e orario_tm != NULL.
+
+    @return true se il file viene salvato correttamente, false in caso di errore
+
+*/
+bool salva_report_su_file(const Catalogo_Lezioni *catalogo, const int *conteggi, int num_prenotazioni, const char *path, Orario_Tm* orario){
+
+    cJSON* report_json = cJSON_CreateObject();
+    
+    if (!report_json) return false;
+
+    cJSON_AddNumberToObject(report_json, "anno", orario->tm_year);
+    cJSON_AddNumberToObject(report_json, "mese", orario->tm_mon);
+    cJSON_AddNumberToObject(report_json, "totale_prenotazioni", num_prenotazioni);
+
+    cJSON* lezioni_array = cJSON_CreateArray();
+    if (!lezioni_array) {
+        cJSON_Delete(report_json);
+        return false;
+    }
+
+    // Trova frequenza max
+    int max_prenotazioni = 0;
+    for (int i = 0; i < catalogo->numero_lezioni; i++) {
+        if (conteggi[i] > max_prenotazioni) max_prenotazioni = conteggi[i];
+    }
+
+    for (int i = 0; i < catalogo->numero_lezioni; i++) {
+        if (conteggi[i] == max_prenotazioni && max_prenotazioni > 0) {
+            cJSON* lezione = cJSON_CreateObject();
+            cJSON_AddNumberToObject(lezione, "id_lezione", catalogo->lezione[i].ID);
+            cJSON_AddStringToObject(lezione, "nome", catalogo->lezione[i].nome);
+            cJSON_AddNumberToObject(lezione, "frequenza", conteggi[i]);
+            cJSON_AddItemToArray(lezioni_array, lezione);
+        }
+    }
+    cJSON_AddItemToObject(report_json, "lezioni_piu_frequentate", lezioni_array);
+
+    char* json_string = cJSON_Print(report_json);
+    if (!json_string) {
+        cJSON_Delete(report_json);
+        return false;
+    }
+
+    FILE* file = fopen(path, "w");
+    if (!file) {
+        free(json_string);
+        cJSON_Delete(report_json);
+        return false;
+    }
+
+    fputs(json_string, file);
+    fclose(file);
+    free(json_string);
+    cJSON_Delete(report_json);
+
+    return true;
+
+}
+
+/*
+
+    Controlla se esiste già un report JSON salvato per l’anno e mese specificati nella struttura Orario_Tm.
+
+    @param Orario_tm* orario -> puntatore alla struttura contenente le informazioni anno, mese da verificare
+
+    -Pre:
+    orario != NULL.
+
+    @return true se il file di report esite, false se non è presente nell'archivio.
+
+
+*/
+bool report_esistente(Orario_Tm *orario)
+{
+
+    char nome_file[64];
+    snprintf(nome_file, sizeof(nome_file), "archivio_report/Report_%04d_%02d.json", orario->tm_year, orario->tm_mon);
+
+    FILE* file = fopen(nome_file, "r");
+    if (file != NULL) {
+        fclose(file);
+        return true; // Report già presente
+    }
+    return false;
+}
 
 /*
   Elimina un elemento dal file JSON persistente in base all'ID specificato. 
@@ -451,7 +548,8 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath){
   - Pre: Id valido
   @result se l'elemento esiste, viene rimosso dal file; altrimenti viene stampato un messaggio di errore
 */
-void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
+void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
+{
 
     const char* path = NULL;
     
@@ -534,6 +632,4 @@ void elimina_elem_da_persistenza(const char* tipo, const unsigned int id){
     fclose(file);
 
     printf("%s con id: %u, eliminato dalla persistenza", path, id);
-
 }
-
