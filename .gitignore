@@ -1,0 +1,6 @@
+#Ignora la cartella delle impostazioni di vscode
+.vscode/
+
+#Qualora non venga pulita la cartella dai file oggetto e dall'eseguibile non verranno caricati sul remote
+*.o
+SGP

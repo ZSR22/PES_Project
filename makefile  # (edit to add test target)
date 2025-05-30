@@ -1,0 +1,12 @@
+CC=gcc
+CFLAGS=-I/usr/include/check
+LDFLAGS=-lcheck
+
+test: test_check.c
+	$(CC) -o test_check test_check.c $(LDFLAGS)
+
+run: test
+	./test_check
+
+clean:
+	rm -f test_check
