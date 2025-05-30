@@ -527,7 +527,7 @@ int main(){
         
       }
       case 11: {
-        genera_report_mensile(*lista, numero_prenotazioni);
+        //genera_report_mensile(*lista, numero_prenotazioni);
         attendi_utente();
         break;
       }

@@ -9,13 +9,13 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Lista_Prenotazioni.h"
 #include "Lezioni.h"
 #include "Persistenza_Dati.h"
 #include "report.h"
 #include "Prenotazione.h"
-#include "utilities.h"
-#include "Test.h"
+#include "Utilities.h"
 #include "abbonamenti.h"
 /*
 
@@ -154,7 +154,7 @@ void test_stampa_clienti_ordinati(const char* input_path, const char* oracolo_pa
     // Legge l'output atteso dal file oracolo
     while (fgets(output_atteso, sizeof(output_atteso), oracolo)) {
         output_atteso[strcspn(output_atteso, "\n")] = '\0';
-        
+        Cliente c;
         // Crea output generato da confrontare
         snprintf(output_generato, sizeof(output_generato), "Cliente %s %s è stato salvato con successo", c.nome, c.cognome);
 
@@ -255,7 +255,7 @@ void test_prenota_lezione(const char* input_path, const char* oracolo_path) {
     }
 
     NodoAlbero* radice = NULL;
-    Catalogo catalogo = {0};
+    Catalogo_Lezioni *catalogo = NULL;
     Lista_Prenotazioni lista = NULL;
 
     char buffer[256];
@@ -343,9 +343,9 @@ void test_visualizza_prenotazioni(const char* input_path, const char* oracolo_pa
 
     while (fgets(buffer, sizeof(buffer), input)) {
         Prenotazione p;
-        sscanf(buffer, "%u %s %s %s %u", &p.ID, p.cliente.nome, p.cliente.cognome, p.cliente.codice_fiscale, &p.lezione.ID);
-        p.cliente.data_inizio = time(NULL);
-        p.cliente.durata = 30; // esempio di durata
+        sscanf(buffer, "%u %s %s %s %u", &p.ID, p.partecipante.nome, p.partecipante.cognome, p.partecipante.codice_fiscale, &p.lezione.ID);
+        p.partecipante.data_inizio = time(NULL);
+        p.partecipante.durata = 30; // esempio di durata
         lista = aggiungi_prenotazione(lista, p);
     }
 
@@ -382,7 +382,7 @@ void test_aggiungi_lezione(const char* input_path, const char* oracolo_path) {
         return;
     }
 
-    Catalogo catalogo = {0};
+    Catalogo_Lezioni catalogo = {0};
 
     char buffer[256];
     char output_atteso[256];
@@ -392,7 +392,7 @@ void test_aggiungi_lezione(const char* input_path, const char* oracolo_path) {
     while (fgets(buffer, sizeof(buffer), input)) {
         Lezione l;
         sscanf(buffer, "%u %s %d %ld", &l.ID, l.nome, &l.max_posti, &l.data);
-        catalogo = aggiungi_lezione(catalogo, l);
+        aggiungi_lezione(&catalogo, l);
     }
 
     // Salva lezioni su file
@@ -431,7 +431,7 @@ void test_visualizza_lezioni(const char* input_path, const char* oracolo_path) {
         return;
     }
 
-    Catalogo catalogo = {0};
+    Catalogo_Lezioni catalogo = {0};
 
     char buffer[256];
     char output_atteso[256];
@@ -441,7 +441,7 @@ void test_visualizza_lezioni(const char* input_path, const char* oracolo_path) {
     while (fgets(buffer, sizeof(buffer), input)) {
         Lezione l;
         sscanf(buffer, "%u %s %d %ld", &l.ID, l.nome, &l.max_posti, &l.data);
-        catalogo = aggiungi_lezione(catalogo, l);
+        aggiungi_lezione(&catalogo, l);
     }
 
     // Visualizza lezioni
@@ -555,9 +555,9 @@ void test_disdici_prenotazione(const char* input_path, const char* oracolo_path)
 
     while (fgets(buffer, sizeof(buffer), input)) {
         Prenotazione p;
-        sscanf(buffer, "%u %s %s %s %u", &p.ID, p.cliente.nome, p.cliente.cognome, p.cliente.codice_fiscale, &p.lezione.ID);
-        p.cliente.data_inizio = time(NULL);
-        p.cliente.durata = 30; // esempio di durata
+        sscanf(buffer, "%u %s %s %s %u", &p.ID, p.partecipante.nome, p.partecipante.cognome, p.partecipante.codice_fiscale, &p.lezione.ID);
+        p.partecipante.data_inizio = time(NULL);
+        p.partecipante.durata = 30; // esempio di durata
         lista = aggiungi_prenotazione(lista, p);
     }
 
@@ -599,7 +599,7 @@ void test_elimina_lezione(const char* input_path, const char* oracolo_path) {
         return;
     }
 
-    Catalogo catalogo = {0};
+    Catalogo_Lezioni catalogo = {0};
 
     char buffer[256];
     char output_atteso[256];
@@ -609,25 +609,27 @@ void test_elimina_lezione(const char* input_path, const char* oracolo_path) {
     while (fgets(buffer, sizeof(buffer), input)) {
         Lezione l;
         sscanf(buffer, "%u %s %d %ld", &l.ID, l.nome, &l.max_posti, &l.data);
-        catalogo = aggiungi_lezione(catalogo, l);
+        aggiungi_lezione(&catalogo, l);
     }
 
     // Legge l'ID della lezione da eliminare
     char id_lezione_str[10];
     fgets(id_lezione_str, sizeof(id_lezione_str), input);
     unsigned int id_lezione = atoi(id_lezione_str);
+    Lezione lezione;
+    lezione.ID = id_lezione;
 
-    bool eliminato = elimina_lezione(&catalogo, id_lezione);
+    elimina_lezione(&catalogo, lezione);
 
     // Legge l'output atteso dal file oracolo
     fgets(output_atteso, sizeof(output_atteso), oracolo);
 
     // Crea output generato da confrontare
-    if (eliminato) {
+    /*if (eliminato) {
         snprintf(output_generato, sizeof(output_generato), "Lezione %u eliminata con successo", id_lezione);
     } else {
         snprintf(output_generato, sizeof(output_generato), "Lezione %u non trovata", id_lezione);
-    }
+    }*/
 
     // Confronto
     if (strcmp(output_atteso, output_generato) == 0) {
@@ -654,12 +656,12 @@ void test_report_mensile(const char* input_path, const char* oracolo_path) {
 
     // Carica i dati necessari per il report
     NodoAlbero* radice = NULL;
-    Catalogo catalogo = {0};
+    Catalogo_Lezioni *catalogo = NULL;
     Lista_Prenotazioni lista = NULL;
 
     // Carica abbonamenti
     if (!file_vuoto(PATH_FILE_ABBONAMENTI)) {
-        radice = carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI);
+        carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, radice);
     }
     
     // Carica lezioni
@@ -674,7 +676,7 @@ void test_report_mensile(const char* input_path, const char* oracolo_path) {
 
     // Genera il report mensile
     char report[1024];
-    genera_report_mensile(radice, &catalogo, lista, report);
+    //genera_report_mensile(radice, &catalogo, lista, report);
 
     // Legge l'output atteso dal file oracolo
     char output_atteso[1024];

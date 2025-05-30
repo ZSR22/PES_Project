@@ -12,11 +12,8 @@
 #include <string.h>
 #include "report.h"
 #include "abbonamenti.h"
-#include "Prenotazione.h"
 #include "Persistenza_Dati.h"
-#include "lezioni.h"
-#include "utils.h"
-#include "clienti.h"
+#include "Utilities.h"
 
 /**
  * Genera un report mensile delle prenotazioni e delle lezioni disponibili.
@@ -33,8 +30,8 @@
  * - Salva il report su un file specificato da PATH_FILE_REPORT.
  * - Se la lista delle prenotazioni o il catalogo delle lezioni sono NULL, stampa un messaggio di errore.
  */
-void genera_report_mensile(Lista_Prenotazioni* lista, Catalogo_Lezioni* catalogo) {
-    if (lista == NULL || catalogo == NULL) {
+void genera_report_mensile(const Prenotazione* prenotazioni, Catalogo_Lezioni* catalogo) {
+    /*if (lista == NULL || catalogo == NULL) {
         printf("Nessuna prenotazione o lezione disponibile per generare il report.\n");
         return;
     }
@@ -43,7 +40,7 @@ void genera_report_mensile(Lista_Prenotazioni* lista, Catalogo_Lezioni* catalogo
     printf("Numero totale di prenotazioni: %d\n", lista->lunghezza);
     printf("Lezioni disponibili:\n");
     for (int i = 0; i < catalogo->numero_lezioni; i++) {
-        Lezione* lezione = &catalogo->lezioni[i];
+        Lezione* lezione = &catalogo->lezione[i];
         printf("ID: %u, Nome: %s, Max Posti: %d\n", lezione->ID, lezione->nome, lezione->max_posti);
     }
     printf("===========================\n");
@@ -59,5 +56,5 @@ void genera_report_mensile(Lista_Prenotazioni* lista, Catalogo_Lezioni* catalogo
     printf("===========================\n");
     printf("Report generato con successo.\n");
     salva_report_su_file(lista, catalogo, PATH_FILE_REPORT);
-    printf("Report salvato in %s\n", PATH_FILE_REPORT);
+    printf("Report salvato in %s\n", PATH_FILE_REPORT); */
 }

@@ -8,10 +8,10 @@
 =============================================================================
 */
 #include <stddef.h>
-#include "Prenotazioni.h"
+#include "Prenotazione.h"
 #ifndef REPORT_H
 #define REPORT_H
 
-void genera_report_mensile(const Prenotazione* prenotazioni, size_t numero_prenotazioni);
+void genera_report_mensile(const Prenotazione* prenotazioni, Catalogo_Lezioni* catalogo);
 
 #endif 
