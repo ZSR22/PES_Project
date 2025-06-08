@@ -4,3 +4,4 @@
 #Qualora non venga pulita la cartella dai file oggetto e dall'eseguibile non verranno caricati sul remote
 *.o
 SGP
+SGP_TEST

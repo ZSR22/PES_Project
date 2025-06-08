@@ -25,43 +25,45 @@
 */
 bool confronta_output(const char *file_output, const char *file_oracolo){
 
-    FILE* output = fopen(file_output, "r");
-    FILE* oracolo = fopen(file_oracolo, "r");
+  FILE* output = fopen(file_output, "r");
+  FILE* oracolo = fopen(file_oracolo, "r");
 
-    if(!output || !oracolo) { return false;}
+  if(!output || !oracolo) { return false;}
 
-    char riga_output[512];
-    char riga_oracolo[512];
+  char riga_output[512];
+  char riga_oracolo[512];
 
-    while(fgets(riga_output, sizeof(riga_output), output) && fgets(riga_oracolo, sizeof(riga_oracolo), oracolo)){
+  while(fgets(riga_output, sizeof(riga_output), output) && fgets(riga_oracolo, sizeof(riga_oracolo), oracolo)){
 
-        riga_output[strcspn(riga_output, "\n")] = '\0';
-        riga_oracolo[strcspn(riga_oracolo, "\n")] = '\0';
+    riga_output[strcspn(riga_output, "\n")] = '\0';
+    riga_oracolo[strcspn(riga_oracolo, "\n")] = '\0';
 
-        if(strcmp(riga_output, riga_oracolo) != 0){
+    if(strcmp(riga_output, riga_oracolo) != 0){
                 
-            fclose(output);
-            fclose(oracolo);
+      fclose(output);
+      fclose(oracolo);
                 
-            return false;
+      return false;
 
-        }
+    }
 
             
 
 
-    }
+  }
 
-    if(!feof(output) || !feof(oracolo)){
+  if(!feof(output) || !feof(oracolo)){
 
-        fclose(output);
-        fclose(oracolo);
-        fprintf(stderr, "ERRORE: i file hanno contenuti identici ma lunghezze diverse (uno contiene più righe)\n");
-        return false;
+    fclose(output);
+    fclose(oracolo);
+    fprintf(stderr, "ERRORE: i file hanno contenuti identici ma lunghezze diverse (uno contiene più righe)\n");
+    return false;
 
-    }
+  }
 
-    return true;
+  fclose(output);
+  fclose(oracolo);
+  return true;
 
 }
 
@@ -194,9 +196,10 @@ bool blocco_valido(char **campi, int numero_campi){
 
 */
 char* duplica_stringa(const char* stringa){
-    
-    char* copia = malloc(strlen(stringa) + 1);
-    if (copia) strcpy(copia, stringa);
-    return copia;
+  
+  if (!stringa) return NULL;
+  char* copia = malloc(strlen(stringa) + 1);
+  if (copia) strcpy(copia, stringa);
+  return copia;
 
 }

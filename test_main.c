@@ -38,9 +38,9 @@ int main(void) {
     carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
     carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
 
-    
+    printf("\n== INIZIO TEST PRENOTAZIONE ==\n");
     avvia_test_prenotazioni(lista, radice, catalogo);
-    
+    printf("\n== FINE TEST PRENOTAZIONE ==\n");
 
     libera_lista_prenotazioni(lista);
     elimina_catalogo(catalogo);

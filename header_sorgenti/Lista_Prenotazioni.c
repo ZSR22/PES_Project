@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "Lista_Prenotazioni.h"
 
 /*
@@ -376,4 +377,28 @@ bool lezione_prenotata(const Lista_Prenotazioni lista, const Lezione lezione){
 
     return false;
     
+}
+
+/*
+  Verifica la validità sintattica di un codice fiscale italiano.
+
+  @param char* cf Puntatore a una stringa contenente il codice fiscale da validare.
+
+
+
+  - Controlli effettuati:
+    - Lunghezza esatta di 16 caratteri
+    - Tutti i caratteri sono alfanumerici maiuscoli (A-Z, 0-9)
+  
+  @return
+    true se il codice fiscale rispetta i requisiti sintattici, false altrimenti
+*/
+bool codice_fiscale_valido(const char* cf) {
+    if (!cf || strlen(cf) != 16) return false;
+
+    for (int i = 0; i < 16; i++) {
+        if (!isalnum(cf[i]) || islower(cf[i])) return false;
+    }
+
+    return true;
 }

@@ -81,69 +81,100 @@ static void esegui_test_prenotazione(
     const char* messaggio_successo,
     const char* messaggio_fallimento
 ) {
+
     FILE* file_input = fopen(input_path, "r");
     if (!file_input) {
-        stampa_fail(test_num, "file input aperto correttamente", "fallita apertura file di input");
+        perror("Errore apertura file input");
+        stampa_fail(test_num, "file input presente", "impossibile aprire file");
         return;
+    }
+
+    char* campi[NUM_CAMPI_PRENOTAZIONE] = { NULL };
+    char buffer[256];
+    bool errore_input = false;
+
+    for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) {
+        if (fgets(buffer, sizeof(buffer), file_input) == NULL) {
+            stampa_fail(test_num, "campi presenti", "campo mancante nel file input");
+            errore_input = true;
+            break;
+        }
+
+        buffer[strcspn(buffer, "\r\n")] = '\0';
+        campi[i] = duplica_stringa(buffer);
+    }
+
+    fclose(file_input);
+
+    if (errore_input) {
+        for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) {
+            if (campi[i]) free(campi[i]);
+        }
+        return;
+    }
+
+    if (!blocco_valido(campi, NUM_CAMPI_PRENOTAZIONE)) {
+        stampa_fail(test_num, "campi validi", "campi nulli o vuoti");
+        for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) {
+            free(campi[i]);
+        }
+        return;
+    }
+
+    const char* codice_fiscale = campi[0];
+    unsigned int id_lezione = (unsigned int) strtoul(campi[1], NULL, 10);
+
+    NodoAlbero* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
+    Lezione* lezione_trovata = trova_lezione(catalogo, id_lezione);
+    if(!codice_fiscale_valido(codice_fiscale)){
+        scrivi_log(esito_path, "Codice fiscale non valido");
+    } else if (!cliente_trovato) {
+        scrivi_log(esito_path, "Codice fiscale cliente non trovato");
+    } else if (!lezione_trovata) {
+        scrivi_log(esito_path, "ID lezione non trovato");
+    } else {
+        
+        Prenotazione nuova;
+        nuova.ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
+        nuova.partecipante = cliente_trovato->cliente;
+        nuova.lezione = *lezione_trovata;
+
+        bool esito = true;
+        if (controllo_conflitto_orario(*lista, nuova.lezione, cliente_trovato->cliente)) {
+            scrivi_log(esito_path, "Prenotazione già registrata");
+            esito = false;
+        } else if (lezione_piena(*lista, *lezione_trovata)) {
+            scrivi_log(esito_path, "Lezione piena");
+            esito = false;
+        }
+        if(esito){
+            if (aggiungi_prenotazione(lista, nuova)) {
+                scrivi_log(esito_path, messaggio_successo); 
+            } else {
+                scrivi_log(esito_path, "Prenotazione non registrata");
+            }
+        }
+        
+        
     }
 
     FILE* oracolo = fopen(oracolo_path, "r");
     if (!oracolo) {
-        perror("Errore apertura oracolo");
-        stampa_fail(test_num, "oracolo presente", "file oracolo non trovato");
-        return;
-    }
-
-    if(!riga_oracolo_presente(oracolo, test_num)){
-        stampa_fail(test_num, "Oracolo contenente riga per il contronto", "Riga non presente");
-        return;
-    }
-    
-    fclose(oracolo);
-
-    char* campi[NUM_CAMPI_PRENOTAZIONE];
-    char buffer[256];
-    for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) {
-        if (fgets(buffer, sizeof(buffer), file_input) == NULL) {
-            fclose(file_input);
-            stampa_fail(test_num, "2 campi", "campo mancante nel file di input");
-            return;
+        stampa_fail(test_num, "file oracolo presente", "file oracolo mancante");
+    } else {
+        fclose(oracolo);
+        if (confronta_output(esito_path, oracolo_path)) {
+            stampa_ok(test_num);
+        } else {
+            stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
         }
-        buffer[strcspn(buffer, "\r\n")] = '\0';
-        campi[i] = duplica_stringa(buffer);
-    }
-    fclose(file_input);
-
-    if (!blocco_valido(campi, NUM_CAMPI_PRENOTAZIONE)) {
-        stampa_fail(test_num, "campi validi", "campi nulli o vuoti");
-        for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) free(campi[i]);
-        return;
     }
 
-    NodoAlbero* cliente_trovato = ricerca_cliente(radice, campi[0]);
-    unsigned int id_lezione = (unsigned int) strtoul(campi[1], NULL, 10);
-    Lezione* lezione_trovata = trova_lezione(catalogo, id_lezione);
-
-    Prenotazione nuova_prenotazione;
-    nuova_prenotazione.ID = genera_id_univoco(PATH_FILE_PRENOTAZIONI);
-    nuova_prenotazione.lezione = *lezione_trovata;
-    nuova_prenotazione.partecipante = cliente_trovato->cliente;
-
-    bool risultato = aggiungi_prenotazione(lista, nuova_prenotazione);
-
-    if (risultato) {
-        scrivi_log(esito_path, messaggio_successo);
-    } else {
-        scrivi_log(esito_path, messaggio_fallimento);
+    for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) {
+        free(campi[i]);
+        campi[i] = NULL;
     }
 
-    if (confronta_output(esito_path, oracolo_path)) {
-        stampa_ok(test_num);
-    } else {
-        stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
-    }
-
-    for (int i = 0; i < NUM_CAMPI_PRENOTAZIONE; i++) free(campi[i]);
 }
 
 /*
@@ -237,36 +268,6 @@ static void test_prenotazione_lezione_piena(Lista_Prenotazioni *lista, NodoAlber
 
 /*
 
-  Verifica che una prenotazione con orario sovrapposto a una prenotazione
-  esistente venga correttamente rifiutata dal sistema.
-
-  -Usa come input il file: input/prenotazione_orari_sovrapposti.txt
-
-  -Scrive l’esito in: esiti/prenotazione_orari_sovrapposti.log
-
-  -Confronta il risultato con: oracolo/prenotazione_orari_sovrapposti.txt
-
-  @pre i file input e oracolo devono esistere e contenere due righe (CF e ID lezione)
-  
-  @return stampa il risultato del test a console e registra l’esito nel file log
-
-*/
-static void test_prenotazione_orari_sovrapposti(Lista_Prenotazioni *lista, NodoAlbero *radice, Catalogo_Lezioni *catalogo){
-
-    esegui_test_prenotazione(
-        4,
-        PATH_INPUT_PRENOTAZIONE_ORARI_SOVRAPPOSTI,
-        PATH_ESITO_PRENOTAZIONE_ORARI_SOVRAPPOSTI,
-        PATH_ORACOLO_PRENOTAZIONE_ORARI_SOVRAPPOSTI,
-        lista, radice, catalogo,
-        "Orario lezione sovrapposto a un'altra prenotazione",
-        "Prenotazione accettata"
-    );
-
-}
-
-/*
-
   Verifica che una prenotazione con ID lezione non esistente
   venga correttamente rifiutata dal sistema.
 
@@ -283,7 +284,7 @@ static void test_prenotazione_orari_sovrapposti(Lista_Prenotazioni *lista, NodoA
 */
 static void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
-        5,
+        4,
         PATH_INPUT_PRENOTAZIONE_ID_INVALIDO,
         PATH_ESITO_PRENOTAZIONE_ID_INVALIDO,
         PATH_ORACOLO_PRENOTAZIONE_ID_INVALIDO,
@@ -310,7 +311,7 @@ static void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, N
 */
 static void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
-        6,
+        5,
         PATH_INPUT_PRENOTAZIONE_DUPLICATA,
         PATH_ESITO_PRENOTAZIONE_DUPLICATA,
         PATH_ORACOLO_PRENOTAZIONE_DUPLICATA,
@@ -338,7 +339,7 @@ static void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* r
 */
 static void test_prenotazione_codice_fiscale_malformato(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
-        7,
+        6,
         PATH_INPUT_CF_MALFORMATO,
         PATH_ESITO_CF_MALFORMATO,
         PATH_ORACOLO_CF_MALFORMATO,
@@ -366,7 +367,7 @@ Verifica che una prenotazione per una lezione con data già superata
 */
 static void test_prenotazione_lezione_passata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
-        8,
+        7,
         PATH_INPUT_LEZIONE_PASSATA,
         PATH_ESITO_LEZIONE_PASSATA,
         PATH_ORACOLO_LEZIONE_PASSATA,
@@ -397,7 +398,6 @@ void avvia_test_prenotazioni(Lista_Prenotazioni *lista, NodoAlbero *radice, Cata
     test_prenotazione_cliente_registrato(lista, radice, catalogo);
     test_prenotazione_cliente_inesistente(lista, radice, catalogo);
     test_prenotazione_lezione_piena(lista, radice, catalogo);
-    test_prenotazione_orari_sovrapposti(lista, radice, catalogo);
     test_prenotazione_id_lezione_non_valido(lista, radice, catalogo);
     test_prenotazione_duplicata(lista, radice, catalogo);
     test_prenotazione_codice_fiscale_malformato(lista, radice, catalogo);

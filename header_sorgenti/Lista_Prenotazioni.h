@@ -33,5 +33,6 @@ bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione le
 Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante);
 bool cliente_prenotato(const Lista_Prenotazioni lista, const Cliente partecipante);
 bool lezione_prenotata(const Lista_Prenotazioni lista, const Lezione lezione);
+bool codice_fiscale_valido(const char* cf);
 
 #endif
