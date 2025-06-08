@@ -32,12 +32,13 @@
     - Chiama salva_report_su_file per salvare il report su file JSON.
     - Se il report mensile è stato precendentemente generato, stamperà a video un avviso.
 
+    @return true se la generazione avviene con successo, false se ci sono stati errori
  */
-void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo) {
+bool genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo) {
     
     if (lista == NULL || catalogo == NULL) {
         fprintf(stderr, "Errore: lista o catalogo vuoti.\n");
-        return;
+        return false;
     }
 
     time_t ora_corrente = time(NULL);
@@ -46,7 +47,7 @@ void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
     if(report_esistente(orario_tm)){
         
         printf("Il report sul mese attuale è stato già generato\n");
-        return;
+        return false;
 
     }
 
@@ -54,7 +55,7 @@ void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
     int* conteggio_lezioni = calloc(catalogo->numero_lezioni, sizeof(int));
     if (conteggio_lezioni == NULL) {
         fprintf(stderr, "Errore di allocazione memoria per conteggio lezioni.\n");
-        return;
+        return false;
     }
 
     // Conta prenotazioni totali e frequenza per ogni lezione
@@ -98,7 +99,7 @@ void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
     }
 
     char nome_file[64];
-    snprintf(nome_file, sizeof(nome_file), "archivio_report/Report_%04d_%02d.json", orario_tm->tm_year, orario_tm->tm_mon);
+    snprintf(nome_file, sizeof(nome_file), "../archivio_report/Report_%04d_%02d.json", orario_tm->tm_year, orario_tm->tm_mon);
 
     if(salva_report_su_file(catalogo, conteggio_lezioni, num_prenotazioni, nome_file, orario_tm)){
         printf("Report salvato su file: %s\n", nome_file);
@@ -108,4 +109,6 @@ void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
 
 
     free(conteggio_lezioni);
+
+    return true;
 }

@@ -42,6 +42,10 @@ int main(void) {
     avvia_test_prenotazioni(lista, radice, catalogo);
     printf("\n== FINE TEST PRENOTAZIONE ==\n");
 
+    printf("\n== INIZIO TEST REPORT ==\n");
+    avvia_test_report(catalogo, lista);
+    printf("\n== INIZIO TEST REPORT ==\n");
+
     libera_lista_prenotazioni(lista);
     elimina_catalogo(catalogo);
     libera_clienti(radice);

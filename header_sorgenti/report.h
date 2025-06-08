@@ -13,6 +13,6 @@
 
 #include "Lista_Prenotazioni.h"
 
-void genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo);
+bool genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezioni* catalogo);
 
 #endif 

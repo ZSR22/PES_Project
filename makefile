@@ -18,6 +18,7 @@ SRC = header_sorgenti/abbonamenti.c \
       header_sorgenti/Persistenza_Dati.c \
       header_sorgenti/Prenotazione.c \
       header_sorgenti/Utilities.c \
+      header_sorgenti/report.c \
       cjson/cJSON.c \
       cjson/cJSON_Utils.c \
       test_clienti.c \
