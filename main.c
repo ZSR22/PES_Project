@@ -16,8 +16,10 @@
  
   DURANTE L'ESECUZIONE:
      - Ogni modifica alle strutture dati deve aggiornare il file JSON corrispondente
-/*
 
+*/
+
+/*
 Stampa a video il menu principale dell'applicazione
 
 
@@ -138,6 +140,12 @@ int main(){
         printf("Inserisci codice fiscale: ");
         fgets(c.codice_fiscale, sizeof(c.codice_fiscale), stdin);
         c.codice_fiscale[strcspn(c.codice_fiscale, "\n")] = '\0';
+        if(!codice_fiscale_valido(c.codice_fiscale)){
+          fprintf(stderr, "\n");
+          printf("Codice fiscale non valido\n");
+          attendi_utente();
+          break;
+        }
              
 
         printf("Inserisci durata abbonamento (in giorni): ");
@@ -205,6 +213,12 @@ int main(){
         printf("Inserisci codice fiscale da cercare:");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+        if(!codice_fiscale_valido(codice_fiscale)){
+          fprintf(stderr, "\n");
+          printf("Codice fiscale non valido\n");
+          attendi_utente();
+          break;
+        }
 
 
         NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
@@ -232,6 +246,12 @@ int main(){
         printf("Inserisci codice fiscale: ");
         fgets(codice_fiscale, MAX_CF, stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+        if(!codice_fiscale_valido(codice_fiscale)){
+          fprintf(stderr, "\n");
+          printf("Codice fiscale non valido\n");
+          attendi_utente();
+          break;
+        }
 
         NodoAlbero* cliente_trovato = ricerca_cliente(radice, codice_fiscale);
         if (cliente_trovato == NULL) {
@@ -394,6 +414,12 @@ int main(){
         printf("Inserisci il codice fiscale del cliente da eliminare: ");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+        if(!codice_fiscale_valido(codice_fiscale)){
+          fprintf(stderr, "\n");
+          printf("Codice fiscale non valido\n");
+          attendi_utente();
+          break;
+        }
 
         NodoAlbero* nodo_cliente_trovato = ricerca_cliente(radice, codice_fiscale);
         
@@ -431,6 +457,12 @@ int main(){
         printf("Inserisci il codice fiscale del cliente: ");
         fgets(codice_fiscale, sizeof(codice_fiscale), stdin);
         codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+        if(!codice_fiscale_valido(codice_fiscale)){
+          fprintf(stderr, "\n");
+          printf("Codice fiscale non valido\n");
+          attendi_utente();
+          break;
+        }
 
         NodoAlbero* nodo_cliente_trovato = ricerca_cliente(radice, codice_fiscale);
         if (nodo_cliente_trovato == NULL) {
