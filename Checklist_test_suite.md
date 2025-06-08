@@ -54,8 +54,8 @@
 
 ##  Makefile
 
-- [ ] Target `make test`: compila ed esegue la suite
-- [ ] Target `make clean`: pulisce `.o`, `test_suite`, `esiti/*.log`
+- [X] Target `make test`: compila ed esegue la suite
+- [ ] Target `make clean`: pulisce `.o`, `test_suite`
 - [ ] Eventuale clean avanzata per file temporanei
 
 ---
@@ -70,8 +70,8 @@
 
 ##  Extra (facoltativi)
 
-- [ ] Test con oracolo mancante -> verifica fallback/error log
-- [ ] Test con input incompleto -> verifica blocco cliente
+- [X] Test con oracolo mancante -> verifica fallback/error log
+- [X] Test con input incompleto -> verifica blocco cliente
 - [ ] Documentare ogni funzione in Report
 
 

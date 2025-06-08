@@ -1,3 +1,12 @@
+/* 
+=============================================================================
+ File: test_main.c
+ Descrizione: Suite di test del progetto SGP
+ Autore: Gianmarco Raimondi
+ Data: 06/06/2025
+ Versione: 1.0
+=============================================================================
+*/
 #include "test_prenotazioni.h"
 #include "test_clienti.h"
 #include "test_report.h"
@@ -27,7 +36,9 @@ int main(void) {
     Catalogo_Lezioni *catalogo = carica_catalogo_da_file(PATH_FILE_LEZIONI);
 
     carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
-   carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
+    carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
+
+    
     avvia_test_prenotazioni(lista, radice, catalogo);
     
 

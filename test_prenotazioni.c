@@ -1,3 +1,12 @@
+/* 
+=============================================================================
+ File: test_prenotazioni.h
+ Descrizione: Implementazioni delle funzioni di test eseguiti su registrazione di prenotazione
+ Autore: Gianmarco Raimondi
+ Data: 06/06/2025
+ Versione: 1.0
+=============================================================================
+*/
 #include <string.h>
 #include "test_prenotazioni.h"
 #include "test_utilities.h"
@@ -12,14 +21,14 @@
 #define PATH_INPUT_CF_MALFORMATO "input/prenotazione_cf_malformato.txt"
 #define PATH_INPUT_LEZIONE_PASSATA "input/prenotazione_lezione_passata.txt"
 
-#define PATH_ORACOLO_PRENOTAZIONE_CLIENTE_REGISTRATO "oracolo/prenotazione_cliente.txt"
-#define PATH_ORACOLO_CLIENTE_INESISTENTE "oracolo/prenotazione_cliente inesistente.txt"
-#define PATH_ORACOLO_PRENOTAZIONE_LEZIONE_PIENA "oracolo/prenotazione_lezione_piena.txt"
-#define PATH_ORACOLO_PRENOTAZIONE_ORARI_SOVRAPPOSTI "oracolo/prenotazioni_orario_sovrapposto.txt"
-#define PATH_ORACOLO_PRENOTAZIONE_ID_INVALIDO "oracolo/prenotazione_id_invalido.txt"
-#define PATH_ORACOLO_PRENOTAZIONE_DUPLICATA "oracolo/prenotazione_duplicata.txt"
-#define PATH_ORACOLO_CF_MALFORMATO "oracolo/prenotazione_cf_malformato.txt"
-#define PATH_ORACOLO_LEZIONE_PASSATA "oracolo/prenotazione_lezione_passata.txt"
+#define PATH_ORACOLO_PRENOTAZIONE_CLIENTE_REGISTRATO "oracoli/prenotazione_cliente.txt"
+#define PATH_ORACOLO_CLIENTE_INESISTENTE "oracoli/prenotazione_cliente_inesistente.txt"
+#define PATH_ORACOLO_PRENOTAZIONE_LEZIONE_PIENA "oracoli/prenotazione_lezione_piena.txt"
+#define PATH_ORACOLO_PRENOTAZIONE_ORARI_SOVRAPPOSTI "oracoli/prenotazione_orario_sovrapposto.txt"
+#define PATH_ORACOLO_PRENOTAZIONE_ID_INVALIDO "oracoli/prenotazione_id_invalido.txt"
+#define PATH_ORACOLO_PRENOTAZIONE_DUPLICATA "oracoli/prenotazione_duplicata.txt"
+#define PATH_ORACOLO_CF_MALFORMATO "oracoli/prenotazione_cf_malformato.txt"
+#define PATH_ORACOLO_LEZIONE_PASSATA "oracoli/prenotazione_lezione_passata.txt"
 
 #define PATH_ESITO_PRENOTAZIONE_CLIENTE_REGISTRATO   "esiti/prenotazione_cliente.log"
 #define PATH_ESITO_CLIENTE_INESISTENTE "esiti/prenotazione_cliente_inesistente.log"
@@ -77,6 +86,20 @@ static void esegui_test_prenotazione(
         stampa_fail(test_num, "file input aperto correttamente", "fallita apertura file di input");
         return;
     }
+
+    FILE* oracolo = fopen(oracolo_path, "r");
+    if (!oracolo) {
+        perror("Errore apertura oracolo");
+        stampa_fail(test_num, "oracolo presente", "file oracolo non trovato");
+        return;
+    }
+
+    if(!riga_oracolo_presente(oracolo, test_num)){
+        stampa_fail(test_num, "Oracolo contenente riga per il contronto", "Riga non presente");
+        return;
+    }
+    
+    fclose(oracolo);
 
     char* campi[NUM_CAMPI_PRENOTAZIONE];
     char buffer[256];
@@ -139,7 +162,7 @@ static void esegui_test_prenotazione(
   @return stampa il risultato del test a console e registra l’esito nel file log
 
 */
-void test_prenotazione_cliente_registrato(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo){
+static void test_prenotazione_cliente_registrato(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo){
 
     esegui_test_prenotazione(
         1,
@@ -169,7 +192,7 @@ void test_prenotazione_cliente_registrato(Lista_Prenotazioni* lista, NodoAlbero*
   @return stampa il risultato del test a console e registra l’esito nel file log
 
 */
-void test_prenotazione_cliente_inesistente(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo){
+static void test_prenotazione_cliente_inesistente(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo){
 
     esegui_test_prenotazione(
         2,
@@ -198,7 +221,7 @@ void test_prenotazione_cliente_inesistente(Lista_Prenotazioni* lista, NodoAlbero
   @return stampa il risultato del test a console e registra l’esito nel file log
 
 */
-void test_prenotazione_lezione_piena(Lista_Prenotazioni *lista, NodoAlbero* radice, Catalogo_Lezioni *catalogo){
+static void test_prenotazione_lezione_piena(Lista_Prenotazioni *lista, NodoAlbero* radice, Catalogo_Lezioni *catalogo){
 
     esegui_test_prenotazione(
         3,
@@ -228,7 +251,7 @@ void test_prenotazione_lezione_piena(Lista_Prenotazioni *lista, NodoAlbero* radi
   @return stampa il risultato del test a console e registra l’esito nel file log
 
 */
-void test_prenotazione_orari_sovrapposti(Lista_Prenotazioni *lista, NodoAlbero *radice, Catalogo_Lezioni *catalogo){
+static void test_prenotazione_orari_sovrapposti(Lista_Prenotazioni *lista, NodoAlbero *radice, Catalogo_Lezioni *catalogo){
 
     esegui_test_prenotazione(
         4,
@@ -258,7 +281,7 @@ void test_prenotazione_orari_sovrapposti(Lista_Prenotazioni *lista, NodoAlbero *
   @return stampa l’esito del test a console e registra il risultato nel log
 
 */
-void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
+static void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
         5,
         PATH_INPUT_PRENOTAZIONE_ID_INVALIDO,
@@ -285,7 +308,7 @@ void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, NodoAlbe
   @return stampa l’esito del test a console e registra il risultato nel log
 
 */
-void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
+static void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
         6,
         PATH_INPUT_PRENOTAZIONE_DUPLICATA,
@@ -313,7 +336,7 @@ void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* radice, 
   @return stampa l’esito del test a console e registra il risultato nel log
 
 */
-void test_prenotazione_codice_fiscale_malformato(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
+static void test_prenotazione_codice_fiscale_malformato(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
         7,
         PATH_INPUT_CF_MALFORMATO,
@@ -326,8 +349,8 @@ void test_prenotazione_codice_fiscale_malformato(Lista_Prenotazioni* lista, Nodo
 }
 
 /*
-
-  Verifica che una prenotazione per una lezione con data già superata
+  
+Verifica che una prenotazione per una lezione con data già superata
   venga rifiutata dal sistema.
 
   - Usa input: input/prenotazione_lezione_passata.txt
@@ -341,7 +364,7 @@ void test_prenotazione_codice_fiscale_malformato(Lista_Prenotazioni* lista, Nodo
   @return stampa l’esito del test a console e registra il risultato nel log
 
 */
-void test_prenotazione_lezione_passata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
+static void test_prenotazione_lezione_passata(Lista_Prenotazioni* lista, NodoAlbero* radice, Catalogo_Lezioni* catalogo) {
     esegui_test_prenotazione(
         8,
         PATH_INPUT_LEZIONE_PASSATA,

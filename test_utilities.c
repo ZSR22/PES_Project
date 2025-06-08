@@ -143,8 +143,8 @@ bool riga_oracolo_presente(FILE *oracolo, int test_num){
     char buffer[512];
     if(!fgets(buffer, sizeof(buffer), oracolo)){
 
-        fprintf(stderr, "ERRORE: Riga in oracolo non presente per test %d\n", test_num);
-        return false;
+      fprintf(stderr, "ERRORE: Riga in oracolo non presente per test %d\n", test_num);
+      return false;
 
     }
     
