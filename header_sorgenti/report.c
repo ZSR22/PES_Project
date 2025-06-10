@@ -102,7 +102,6 @@ bool genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
     snprintf(nome_file, sizeof(nome_file), "archivio_report/Report_%04d_%02d.json", orario_tm->tm_year, orario_tm->tm_mon);
 
     if(salva_report_su_file(catalogo, conteggio_lezioni, num_prenotazioni, nome_file, orario_tm)){
-        printf("Report salvato su file: %s\n", nome_file);
         free(conteggio_lezioni);
         printf("===========================");
         return true;
