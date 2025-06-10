@@ -48,11 +48,11 @@
 
   @param int test_num -> Numero identificativo del test (per stampa e log)
 
-  @param const char* input_path -> Percorso al file di input contenente i campi del test
+  @param char* input_path -> Percorso al file di input contenente i campi del test
 
-  @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
+  @param char* esito_path -> Percorso al file in cui scrivere l’esito del test
 
-  @param const char* oracolo_path -> Percorso al file oracolo con output atteso
+  @param char* oracolo_path -> Percorso al file oracolo con output atteso
 
   @param Lista_Prenotazioni* lista -> Lista delle prenotazioni attuali
 
@@ -60,15 +60,14 @@
 
   @param Catalogo_Lezioni* catalogo -> Catalogo delle lezioni disponibili
 
-  @param const char* messaggio_successo -> Messaggio da scrivere in caso di successo
+  @param char* messaggio_successo -> Messaggio da scrivere in caso di successo
 
-  @param const char* messaggio_fallimento -> Messaggio da scrivere in caso di fallimento
-
-  -Pre: i file di input e oracolo devono esistere e contenere i campi necessari
+  @param char* messaggio_fallimento -> Messaggio da scrivere in caso di fallimento
 
   -Pre: la lista, l’albero e il catalogo devono essere validi e inizializzati
 
   @return stampa esito del test e scrive log
+
 */
 static void esegui_test_prenotazione(
     int test_num,
@@ -277,7 +276,7 @@ static void test_prenotazione_lezione_piena(Lista_Prenotazioni *lista, NodoAlber
 
   - Confronta con oracolo: oracolo/prenotazione_id_invalido.txt
 
-  @pre il file input contiene codice fiscale e un ID non presente nel catalogo
+  Pre: il file input contiene codice fiscale e un ID non presente nel catalogo
   
   @return stampa l’esito del test a console e registra il risultato nel log
 
@@ -305,7 +304,7 @@ static void test_prenotazione_id_lezione_non_valido(Lista_Prenotazioni* lista, N
 
   - Confronta con oracolo: oracolo/prenotazione_duplicata.txt
 
-  @pre il cliente è già prenotato per la stessa lezione
+  Pre: il cliente è già prenotato per la stessa lezione
   @return stampa l’esito del test a console e registra il risultato nel log
 
 */
@@ -332,7 +331,7 @@ static void test_prenotazione_duplicata(Lista_Prenotazioni* lista, NodoAlbero* r
 
   - Confronta con oracolo: oracolo/prenotazione_cf_malformato.txt
 
-  @pre il codice fiscale nel file è vuoto o malformato
+  Pre: il codice fiscale nel file è vuoto o malformato
 
   @return stampa l’esito del test a console e registra il risultato nel log
 
@@ -360,7 +359,7 @@ Verifica che una prenotazione per una lezione con data già superata
 
   - Confronta con oracolo: oracolo/prenotazione_lezione_passata.txt
 
-  @pre il file contiene una lezione con data antecedente alla data corrente
+  Pre: il file contiene una lezione con data antecedente alla data corrente
   
   @return stampa l’esito del test a console e registra il risultato nel log
 
@@ -386,9 +385,9 @@ static void test_prenotazione_lezione_passata(Lista_Prenotazioni* lista, NodoAlb
   @param NodoAlbero* radice -> Puntatore alla radice dell’albero dei clienti
   @param Catalogo_Lezioni* catalogo -> Puntatore al catalogo delle lezioni disponibili
 
-  -Pre: tutte le strutture devono essere inizializzate
+  -Pre: lista, catalogo != NULL
 
-  @result stampa a console l’esito di ciascun test e logga su file
+  @result stampa a console l’esito di ciascun test e scrive log su file
 
 */
 void avvia_test_prenotazioni(Lista_Prenotazioni *lista, NodoAlbero *radice, Catalogo_Lezioni *catalogo){

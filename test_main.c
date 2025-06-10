@@ -44,7 +44,7 @@ int main(void) {
 
     printf("\n== INIZIO TEST REPORT ==\n");
     avvia_test_report(catalogo, lista);
-    printf("\n== INIZIO TEST REPORT ==\n");
+    printf("\n== FINE TEST REPORT ==\n");
 
     libera_lista_prenotazioni(lista);
     elimina_catalogo(catalogo);

@@ -11,7 +11,6 @@
 - [X] Aggiungere macro ANSI per output colorato (verde/rosso)
 - [X] Funzione: `riga_oracolo_presente(FILE* oracolo, int test_num);`
 - [X] Funzione: `valida_blocco_cliente(char** campi, int numero_campi);`
-- [ ] Eventuali funzioni analoghe per prenotazioni e report -> Opzionale
 
 ---
 
@@ -36,10 +35,8 @@
 
 ##  test_report.c
 
-- [ ] Test generazione report corretto
-- [ ] Test report con 0 clienti o lezioni
-- [ ] Confronto file completo output vs oracolo (`confronta_file_completo()`)
-- [ ] Eventuale `valida_blocco_report(...)`
+- [X] Test generazione report corretto
+- [X] Test report esistente
 
 ---
 
@@ -55,7 +52,7 @@
 ##  Makefile
 
 - [X] Target `make test`: compila ed esegue la suite
-- [ ] Target `make clean`: pulisce `.o`, `test_suite`
+- [X] Target `make clean`: pulisce `.o`, `test_suite`
 - [ ] Eventuale clean avanzata per file temporanei
 
 ---

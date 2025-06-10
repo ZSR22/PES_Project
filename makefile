@@ -61,4 +61,5 @@ test: all
 # Pulizia
 .PHONY: clean
 clean:
-	$(RM) $(OBJ) $(EXEC)
+	$(RM) $(OBJ) $(EXEC) \
+    $(RM) archivio_report/Report_*.json
