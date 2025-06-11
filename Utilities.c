@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "Utilities.h"
-#include "../cjson/cJSON.h"
+#include "cjson/cJSON.h"
 /*
 
 Converte una variabile da tipo time_t in una struttura Tm adatta alla visualizzazione a video
