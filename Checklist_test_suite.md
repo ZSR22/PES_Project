@@ -16,11 +16,11 @@
 
 ##  test_clienti.c
 
-- [ ] Implementare test: cliente valido
-- [ ] Implementare test: cliente con dati mancanti
-- [ ] Implementare test: abbonamento con durata zero
-- [ ] Validare input con `valida_blocco()`
-- [ ] Gestione output con `scrivi_log()` e confronto con oracolo
+- [x] Implementare test: cliente valido
+- [x] Implementare test: cliente con dati mancanti
+- [x] Implementare test: abbonamento con durata zero
+- [x] Validare input con `valida_blocco()`
+- [x] Gestione output con `scrivi_log()` e confronto con oracolo
 - [ ] Stampa esito con colori in console
 
 ---
@@ -59,9 +59,9 @@
 
 ## input/ e oracolo/
 
-- [ ] Creare file di input per test clienti
-- [ ] Creare file oracolo corrispondente
-- [ ] Idem per prenotazioni e report
+- [x] Creare file di input per test clienti
+- [x] Creare file oracolo corrispondente
+- [x] Idem per prenotazioni e report
 
 ---
 
