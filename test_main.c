@@ -12,6 +12,11 @@
 #include "test_report.h"
 #include "header_sorgenti/Persistenza_Dati.h"
 
+// Contatori globali richiamati in test_utilities.c
+  int test_ok = 0;
+  int test_fail = 0;
+  int test_totali = 0;
+
 /*
 
   Punto di ingresso della suite di test per il progetto SGP.
@@ -35,9 +40,6 @@ int main(void) {
   NodoAlbero* radice = NULL;
   Catalogo_Lezioni *catalogo = carica_catalogo_da_file(PATH_FILE_LEZIONI);
 
-  int test_ok = 0;
-  int test_fail = 0;
-  int test_totali = 0;
 
   carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
   carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);

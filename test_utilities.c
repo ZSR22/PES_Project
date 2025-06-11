@@ -11,7 +11,9 @@
 #include <stdlib.h>
 #include "test_utilities.h"
 
-extern int test_ok, test_fail, test_totali;
+extern int test_ok;
+extern int test_fail;
+extern int test_totali;
 /*
 
   Confronta due file di testo riga per riga

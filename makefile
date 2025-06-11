@@ -1,4 +1,3 @@
-#
 # Nome del progetto
 TARGET = SGP_TEST
 
