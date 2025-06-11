@@ -1,7 +1,0 @@
-===== REPORT MENSILE =====
-Totale prenotazioni effettuate: 2
-
-Lezioni più frequentate (1 prenotazioni):
-- yoga (ID: 1749405288)
-- crossfit (ID: 150092978)
-===========================
