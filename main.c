@@ -1,3 +1,12 @@
+/*
+=====================================================
+    File: main.c
+    Descrizione: Punto d'ingresso del programma SGP, gestisce l'interfaccia principale e l'avvio del sistema
+    Autore: Gianmarco Raimondi && Salvatore Zurino
+    Data: 21/05/2025
+    Versione: 1.0
+=====================================================
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -152,12 +161,18 @@ int main(){
         scanf("%d", &c.durata);
         pulisci_input();
 
+        c.data_inizio = time(NULL);
+        if(!abbonamento_valido(c)){
+          printf("Durata abbonamento invalido\n");
+          attendi_utente();
+          break;
+        }
         printf("Inserisci data di nascita formato gg/mm/anno esempio -> 16/07/2001: ");
         fgets(c.data_nascita, sizeof(c.data_nascita), stdin);
         c.data_nascita[strcspn(c.data_nascita, "\n")] = '\0';
 
         pulisci_input();
-        c.data_inizio = time(NULL);
+
         c.id_abbonamento = genera_id_univoco(PATH_FILE_ABBONAMENTI);
 
         NodoAlbero* nodo_valido = inserisci_cliente(radice, c);
@@ -168,8 +183,10 @@ int main(){
           bool cliente_salvato_su_file = salva_abbonamenti_su_file(radice, PATH_FILE_ABBONAMENTI);
           if(cliente_salvato_su_file){
   
-            printf("Cliente salvato su file.\n");
             printf("===========================\n");
+            printf("\n");
+            printf("Cliente %s %s salvato con successo\n", c.nome, c.cognome);
+            printf("Cliente salvato su file.\n");
             attendi_utente();
             break;
 

@@ -44,3 +44,8 @@ $(EXEC): $(OBJ)
 .PHONY: clean
 clean:
 	$(RM) $(OBJ) $(EXEC)
+
+# Esecuzione del programma
+.PHONY: run
+run: all
+	./$(EXEC)    
