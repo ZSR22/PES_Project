@@ -40,6 +40,7 @@ NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     nuovo->cliente = c;
     nuovo->sx = NULL;
     nuovo->dx = NULL;
+    printf("===========================\n");
     printf("Cliente %s %s è stato salvato con successo\n", c.nome, c.cognome);
     return nuovo;
 }
@@ -77,7 +78,11 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
     } else if (cmp > 0) {
         radice->dx = inserisci_cliente(radice->dx, c);
     } else {
-        fprintf(stderr, "ID abbonamento già esistente\n");
+        printf("===========================\n");
+        printf("\n");
+        fprintf(stderr, "Codice fiscale già in uso\n");
+        printf("\n");
+        return NULL;
     }
     return radice;
 }
@@ -103,7 +108,7 @@ int abbonamento_valido(Cliente c) {
         fprintf(stderr, "Data di inizio non valida\n");
         return 0;
     }
-    return giorni_passati <= c.durata; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
+    return (giorni_passati <= c.durata) ? 1 : 0; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
 }
 /**
  * Stampa i clienti in ordine crescente in base al codice fiscale.
@@ -121,14 +126,19 @@ int abbonamento_valido(Cliente c) {
  */
 
 void stampa_clienti_ordinati(NodoAlbero* radice) {
-    if (radice != NULL) {
-        stampa_clienti_ordinati(radice->sx);
-        printf("Nome: %s\t Cognome: %s\t ID: %u\t Valido:%s\n\n", radice->cliente.nome, radice->cliente.cognome, radice->cliente.id_abbonamento, abbonamento_valido(radice->cliente) ? "SI" : "NO");
-        stampa_clienti_ordinati(radice->dx);
-    }else {
-        fprintf(stderr, "Nessun cliente trovato\n");
-    }
-    return;
+
+    if(radice == NULL){ return;}
+
+    stampa_clienti_ordinati(radice->sx);
+
+    printf("Nome: %s\n Cognome: %s\n ID: %u\n Valido:%s\n",
+        radice->cliente.nome,
+        radice->cliente.cognome,
+        radice->cliente.id_abbonamento,
+        abbonamento_valido(radice->cliente) ? "SI" : "NO");
+    printf("\n");
+    stampa_clienti_ordinati(radice->dx);   
+        
 }
 /**
  * Cancella ricorsivamente tutti i nodi dell'albero binario di ricerca.
@@ -202,7 +212,7 @@ void ricerca_e_verifica_cliente(NodoAlbero* radice, const char* codice_fiscale) 
  * @param radice Puntatore alla radice dell'albero.
  * @return Puntatore al nodo con il valore minimo.
  */
-NodoAlbero* trova_minimo(NodoAlbero* nodo) {
+static NodoAlbero* trova_minimo(NodoAlbero* nodo) {
     while (nodo->sx != NULL)
         nodo = nodo->sx;
     return nodo;
@@ -215,7 +225,6 @@ NodoAlbero* trova_minimo(NodoAlbero* nodo) {
  * @param codice_fiscale Codice fiscale del cliente da eliminare.
  * @return La nuova radice dell'albero dopo l'eliminazione.
  */
-
 NodoAlbero* elimina_cliente(NodoAlbero* radice, const char* codice_fiscale) {
     if (radice == NULL)
         return NULL;

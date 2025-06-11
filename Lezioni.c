@@ -32,7 +32,11 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
     
     catalogo->capacità = CAPACITÀ_INIZIALE;
     catalogo->numero_lezioni = 0;
-    catalogo->lezione = malloc(sizeof(Lezione) * catalogo->capacità);
+    catalogo->lezione = malloc(catalogo->capacità * sizeof(Lezione));
+    if (catalogo->lezione == NULL) {
+        fprintf(stderr, "Errore di allocazione memoria per il catalogo lezioni\n");
+        return;
+    }
     
 }
 
@@ -51,7 +55,7 @@ void inizializza_catalogo(Catalogo_Lezioni* catalogo){
  */
 void aggiungi_lezione(Catalogo_Lezioni* catalogo, const Lezione nuova_lezione){
     
-    if(catalogo->numero_lezioni >= catalogo->capacità){
+    if(catalogo->numero_lezioni >= (int)catalogo->capacità){
         size_t nuova_capacità = catalogo->capacità * 2;
         Lezione* temp = realloc(catalogo->lezione, nuova_capacità * sizeof(Lezione));
         if(temp == NULL){
@@ -89,7 +93,7 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
     }
 
     int indice = 0;
-    bool lezione_trovata;
+    bool lezione_trovata = false;
     
     for(int i = 0; i < catalogo->numero_lezioni; i++){
         if(catalogo->lezione[i].ID == lezione_da_eliminare.ID && catalogo->lezione[i].data == lezione_da_eliminare.data){
@@ -111,7 +115,7 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
     catalogo->numero_lezioni--;
     memset(&catalogo->lezione[catalogo->numero_lezioni], 0, sizeof(Lezione));
 
-    if(catalogo->numero_lezioni > 0 && catalogo->numero_lezioni < catalogo->capacità / 4){
+    if(catalogo->numero_lezioni > 0 && catalogo->numero_lezioni < (int)catalogo->capacità / 4){
         
         size_t nuova_capacità = catalogo->capacità / 2;
         Lezione* temp = realloc(catalogo->lezione, nuova_capacità * sizeof(Lezione));
@@ -138,10 +142,14 @@ void elimina_lezione(Catalogo_Lezioni* catalogo, const Lezione lezione_da_elimin
 */
 void elimina_catalogo(Catalogo_Lezioni *catalogo){
 
-    free(catalogo->lezione);
-    catalogo->lezione = NULL;
-    catalogo->numero_lezioni = 0;
-    catalogo->capacità = 0;
+    if(catalogo->lezione != NULL){
+        
+        free(catalogo->lezione);
+        catalogo->lezione = NULL;
+        catalogo->numero_lezioni = 0;
+        catalogo->capacità = 0;
+    }
+    
 
 }
 
@@ -159,7 +167,8 @@ void elimina_catalogo(Catalogo_Lezioni *catalogo){
  */
 void mostra_lezioni(const Catalogo_Lezioni catalogo){
     
-    if(&catalogo == NULL){
+    if(catalogo.numero_lezioni == 0){
+        fprintf(stderr, "\n");
         fprintf(stderr, "Catalogo Vuoto \n");
         return;
     }
@@ -168,14 +177,14 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
 
         Orario_Tm* data = converti_orario_in_struct_tm(catalogo.lezione[i].data);
         
-        printf("ID:%u\n, lezione:%s\n, numero di posti: %d\n, data:%02d/%02d/%04d--%02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
+        printf("\nID: %u\n nome: %s\n numero di posti: %d\n data: %02d/%02d/%04d -- %02d:%02d\n", catalogo.lezione[i].ID, catalogo.lezione[i].nome, catalogo.lezione[i].max_posti,
         data->tm_mday,
         data->tm_mon,
         data->tm_year,
         data->tm_hour,
         data->tm_min);
 
-        printf("======================================");
+        printf("===========================");
     }
 }
 /*
@@ -191,7 +200,7 @@ void mostra_lezioni(const Catalogo_Lezioni catalogo){
   
   @return restituisce un puntatore alla lezione, altrimenti NULL se la lezione non è presente
  */
-const Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id){
+Lezione* trova_lezione(const Catalogo_Lezioni* catalogo, const unsigned int id){
 
     if (catalogo == NULL || catalogo->lezione == NULL || catalogo->numero_lezioni == 0) {
         return NULL;

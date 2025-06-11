@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "Lista_Prenotazioni.h"
 
 /*
@@ -21,8 +22,11 @@ Crea una nuova lista di prenotazioni vuota
 
   @return riporta una lista vuota
  */
-Lista_Prenotazioni crea_lista_prenotazioni(){
-    return NULL;
+Lista_Prenotazioni* crea_lista_prenotazioni(){
+    
+    Lista_Prenotazioni* lista = malloc(sizeof(Lista_Prenotazioni));
+    *lista = NULL;
+    return lista;
 }
 
 /*
@@ -38,25 +42,25 @@ Lista_Prenotazioni crea_lista_prenotazioni(){
 
    @result prenotazione aggiunta in coda alla lista
  */
-void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione){
+bool aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenotazione){
 
     
     if(lezione_piena(*lista, prenotazione.lezione)){
         fprintf(stderr, "La lezione selezionata ha raggiunto il numero massimo di partecipanti. \n");
-        return;
+        return false;
     }
 
     
     if(controllo_conflitto_orario(*lista, prenotazione.lezione, prenotazione.partecipante)){
         fprintf(stderr, "Utente già prenotato.\n");
-        return;
+        return false;
     } 
 
     
     NodoPrenotazione* nuovo_nodo = (NodoPrenotazione*)malloc(sizeof(NodoPrenotazione));
     if(nuovo_nodo == NULL){
         fprintf(stderr, "Errore di allocazione memoria!!\n");
-        return;
+        return false;
     }
     
     
@@ -64,7 +68,7 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
     nuovo_nodo->next = NULL;
     
     
-    if(lista == NULL){
+    if(*lista == NULL){
         *lista = nuovo_nodo;
     } else{
         NodoPrenotazione* nodo_corrente = *lista;
@@ -76,6 +80,9 @@ void aggiungi_prenotazione(Lista_Prenotazioni* lista, const Prenotazione prenota
         nodo_corrente->next = nuovo_nodo; 
         
     }
+
+    return true;
+
 }
 
 /*
@@ -125,20 +132,20 @@ bool disdici_prenotazione(Lista_Prenotazioni* lista, const Lezione* lezione){
   Stampa a video tutte le prenotazioni presenti nella lista
 
   
-   @param Lista_Prenotazioni lista
+   @param Lista_Prenotazioni* lista
 
   
 
   @result per ogni prenotazione vengono mostrati ID, nome, cognome, lezione e data, se la lista è vuota stamperà un messaggio di errore
  */
-void visualizza_prenotazioni(const Lista_Prenotazioni lista){
+void visualizza_prenotazioni(const Lista_Prenotazioni* lista){
     
     if(lista == NULL){
         fprintf(stderr, "La lista è vuota\n");
         return;
     }
     
-    NodoPrenotazione* nodo_corrente = lista;
+    NodoPrenotazione* nodo_corrente = *lista;
     
     while (nodo_corrente != NULL)
     {
@@ -290,7 +297,7 @@ bool controllo_conflitto_orario(const Lista_Prenotazioni lista, const Lezione le
  */
 Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione lezione, const Cliente partecipante){
 
-    if(lista == NULL || &lezione == NULL || &partecipante == NULL){printf("Prenotazione non trovata\n"); return NULL;}
+    if(lista == NULL){printf("Prenotazione non trovata\n"); return NULL;}
        
     NodoPrenotazione* nodo_corrente = lista;
 
@@ -312,4 +319,86 @@ Prenotazione* trova_prenotazione(const Lista_Prenotazioni lista, const Lezione l
 
     return NULL;
     
+}
+
+/*
+    Controlla se un cliente ha almeno una prenotazione attiva. 
+    La funzione controlla se esiste almeno una prenotazione attiva di un partecipante confrontando il codice fiscale salvato in entrambi gli elementi
+
+    @param Lista_Prenotazioni lista
+    @param Cliente partecipante
+
+    Pre: lista allocata, partecipante con elemento codice fiscale valido
+
+    @return True se esiste almeno una prenotazione del partecipante, False se non viene trovata
+
+*/
+bool cliente_prenotato(const Lista_Prenotazioni lista, const Cliente partecipante){
+
+    NodoPrenotazione* nodo_corrente = lista;
+
+    while(nodo_corrente != NULL){
+        if(strcmp(partecipante.codice_fiscale, nodo_corrente->prenotazione.partecipante.codice_fiscale) == 0){
+            return true;
+        }
+
+        nodo_corrente = nodo_corrente->next;
+    }
+
+    return false;
+}
+
+/*
+  
+  Verifica se una lezione è stata prenotata almeno una volta
+  
+  @param Lista_Prenotazioni lista
+  @param Lezione lezione: lezione da verificare
+
+  -Pre: lezione deve avere ID valido
+
+  @return true se almeno una prenotazione è associata alla lezione specificata, false altrimenti
+
+*/
+bool lezione_prenotata(const Lista_Prenotazioni lista, const Lezione lezione){
+
+    NodoPrenotazione* nodo_corrente = lista;
+
+    while (nodo_corrente != NULL){
+    
+        if(nodo_corrente->prenotazione.lezione.ID == lezione.ID){
+            return true;
+        }
+
+       nodo_corrente = nodo_corrente->next;
+        
+    }
+
+
+    return false;
+    
+}
+
+/*
+  Verifica la validità sintattica di un codice fiscale italiano.
+
+  @param char* cf Puntatore a una stringa contenente il codice fiscale da validare.
+
+
+
+  - Controlli effettuati:
+    - Lunghezza esatta di 16 caratteri
+    - Tutti i caratteri sono alfanumerici maiuscoli (A-Z, 0-9)
+  
+  @return
+    true se il codice fiscale rispetta i requisiti sintattici, false altrimenti
+*/
+bool codice_fiscale_valido(const char* cf) {
+    if (!cf || strlen(cf) != 16) return false;
+
+    for (int i = 0; i < 16; i++) {
+        if (!isalnum(cf[i]) || islower(cf[i])) return false;
+    }
+
+    return true;
 }
