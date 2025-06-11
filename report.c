@@ -82,7 +82,7 @@ bool genera_report_mensile(const Lista_Prenotazioni lista, const Catalogo_Lezion
     }
 
     // Stampa il report
-    printf("===== REPORT MENSILE =====\n");
+    printf("\n===== REPORT MENSILE =====\n");
     printf("Totale prenotazioni effettuate: %d\n", num_prenotazioni);
 
     if (max_prenotazioni > 0) {
