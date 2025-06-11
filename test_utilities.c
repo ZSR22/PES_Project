@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include "test_utilities.h"
 
+extern int test_ok, test_fail, test_totali;
 /*
 
   Confronta due file di testo riga per riga
@@ -106,6 +107,8 @@ void scrivi_log(const char* path, const char* messaggio){
 void stampa_ok(int test_num){
 
     printf("Test %d: [%s OK %s]\n", test_num, TEST_PASSATO, TEST_RESET);
+    test_ok++;
+    test_totali++;
 }
 
 /*
@@ -125,6 +128,8 @@ void stampa_fail(int test_num, const char *atteso, const char *ottenuto) {
     
   printf("Test %d: [%s FALLITO %s]\n", test_num, TEST_FALLITO, TEST_RESET);
   printf("Esito atteso: %s\nEsito ottenuto: %s\n\n", atteso, ottenuto);
+  test_fail++;
+  test_totali++;
 
 }
 

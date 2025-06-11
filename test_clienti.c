@@ -1,285 +1,283 @@
 /*
 =====================================================
     File: test_clienti.c
-    Descrizione: Funzione per testare la gestione dei clienti
+    Descrizione: Implementazioni delle funzioni di test eseguiti su registrazione clienti
     Autore: Salvatore Zurino
-    Data: 10/06/2025
-    Versione: 1.2
+    Data: 11/06/2025
+    Versione: 1.0
 =======================================================
-
 */
-/* File con funzioni per testare la gestione dei clienti */
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <assert.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <errno.h>
 #include "test_clienti.h"
-#include "header_sorgenti/abbonamenti.h"
-#include "header_sorgenti/Prenotazioni.h"
-#include "header_sorgenti/Utilities.h"
-#include "header_sorgenti/Catalogo_Lezioni.h"
+#include "test_utilities.h"
+#include "header_sorgenti/Persistenza_Dati.h"
 
- #define path_input_clienti "input/clienti.txt"
- #define path_oracolo_clienti "oracoli/clienti.txt"
- #define PATH_FILE_ABBONAMENTI "persistenza/clienti.json"
- #define MAX_CF 16
+#define PATH_INPUT_CLIENTE_VALIDO "input/cliente_valido.txt"
+#define PATH_INPUT_CLIENTE_DATI_MANCANTI "input/cliente_dati_mancanti.txt"
+#define PATH_INPUT_CLIENTE_ABBONAMENTO_NON_VALIDO "input/cliente_abbonamento_non_valido.txt"
+#define PATH_INPUT_CLIENTE_DUPLICATO "input/cliente_duplicato.txt"
+ 
+#define PATH_ORACOLO_CLIENTE_VALIDO "oracoli/cliente_valido.txt"
+#define PATH_ORACOLO_CLIENTE_DATI_MANCANTI "oracoli/cliente_dati_mancanti.txt"
+#define PATH_ORACOLO_CLIENTE_ABBONAMENTO_NON_VALIDO "oracoli/cliente_abbonamento_non_valido.txt"
+#define PATH_ORACOLO_CLIENTE_DUPLICATO "oracoli/cliente_duplicato.txt"
 
- /*
+#define PATH_ESITO_CLIENTE_VALIDO "esiti/cliente_valido.log"
+#define PATH_ESITO_CLIENTE_DATI_MANCANTI "esiti/cliente_dati_mancanti.log"
+#define PATH_ESITO_CLIENTE_ABBONAMENTO_NON_VALIDO "esiti/cliente_abbonamento_non_valido.log"
+#define PATH_ESITO_CLIENTE_DUPLICATO "esiti/cliente_duplicato.log"
 
-  Esegue un test generico di inserimento clienti leggendo input da file,
-  tentando di aggiungere il cliente e confrontando l’output con un oracolo.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell’albero clienti
-    @return stampa esito del test e scrive log
+#define NUM_CAMPI_CLIENTE 5
 
-*/
-static void test_inserimento_clienti() {
-    FILE* input = fopen(path_input_clienti, "r");
-    FILE* oracolo = fopen(path_oracolo_clienti, "r");
-    if (input == NULL) {
-        perror("Errore apertura file input");
-        exit(EXIT_FAILURE);
-    }
-    assert(input != NULL && oracolo != NULL);
-    NodoAlbero* radice = NULL;
-    int cont = 0;
-
-    do {
-        Cliente c;
-        fgets(c.nome, sizeof(c.nome), input);
-        c.nome[strcspn(c.nome, "\n")] = '\0';
-
-        fgets(c.cognome, sizeof(c.cognome), input);
-        c.cognome[strcspn(c.cognome, "\n")] = '\0';
-
-        fgets(c.codice_fiscale, sizeof(c.codice_fiscale), input);
-        c.codice_fiscale[strcspn(c.codice_fiscale, "\n")] = '\0';
-
-        char durata_str[10];
-        fgets(durata_str, sizeof(durata_str), input);
-        c.durata = atoi(durata_str);
-
-        fgets(c.data_nascita, sizeof(c.data_nascita), input);
-        c.data_nascita[strcspn(c.data_nascita, "\n")] = '\0';
-
-        NodoAlbero* nodo_valido = inserisci_cliente(radice, c);
-        if (nodo_valido != NULL) {
-            radice = nodo_valido;
-            bool cliente_salvato_su_file = salva_abbonamenti_su_file(radice, PATH_FILE_ABBONAMENTI);
-            char expected_result[16];
-            if (fgets(expected_result, sizeof(expected_result), oracolo) != NULL) {
-                expected_result[strcspn(expected_result, "\n")] = '\0';
-                if ((cliente_salvato_su_file && strcmp(expected_result, "1") == 0) ||
-                    (!cliente_salvato_su_file && strcmp(expected_result, "0") == 0)) {
-                    printf("TC salvataggio cliente==>ok\n");
-                } else {
-                    printf("TC salvataggio cliente==>fail\n");
-                }
-            } else {
-                printf("Errore lettura oracolo\n");
-            }
-        }
-        cont++;
-    } while (cont < 3);
-    cont = 0;
-    fclose(input);
-    fclose(oracolo);
-}
 /*
 
-  Esegue un test generico di ricerca clienti leggendo input da file,
-  tentando di trovare il cliente e confrontando l’output con un oracolo.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell'albero clienti
-    @return stampa esito del test e scrive log
-    
-*/
-static void test_ricerca_clienti() {
-    FILE* input = fopen(path_input_clienti, "r");
-    FILE* oracolo = fopen(path_oracolo_clienti, "r");
-    if (input == NULL) {
-        perror("Errore apertura file input");
-        exit(EXIT_FAILURE);
-    }
-    assert(input != NULL && oracolo != NULL);
-    NodoAlbero* radice = NULL;
-        char codice_fiscale[MAX_CF];
-        fgets(codice_fiscale, sizeof(codice_fiscale), input);
-        codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
+  Esegue un test specifico di inserimento cliente confrontando l'esito con un oracolo.
 
-        NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
-        char output_atteso[100];
-        fgets(output_atteso, sizeof(output_atteso), oracolo);
-        output_atteso[strcspn(output_atteso, "\n")] = '\0';
+  - Legge i campi da file di input, tenta l'inserimento, scrive l'esito su log
+    e confronta con l'output atteso (oracolo). Stampa infine l’esito del test.
 
-        if (nodo_trovato != NULL && strcmp(nodo_trovato->cliente.nome, output_atteso) == 0) {
-            printf("TC ricerca cliente==>OK\n");
-        } else {
-            printf("TC ricerca cliente==>fail\n");
-        }
-    fclose(input);
-    fclose(oracolo);
-}
- /*
+  @param int test_num -> Numero identificativo del test
+  @param char* input_path -> Percorso al file contenente i dati del cliente
+  @param char* esito_path -> Percorso del file log generato dal test
+  @param char* oracolo_path -> Percorso al file oracolo con l’esito atteso
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero clienti
+  @param char* messaggio_successo -> Messaggio log per esito positivo
+  @param char* messaggio_fallimento -> Messaggio log per esito negativo
 
-  Esegue un test generico di verifica dell'abbonamento valido leggendo input da file,
-  tentando di trovare il cliente e confrontando l’output con un oracolo.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell'albero clienti
-    @return stampa esito del test e scrive log
+  -Pre: input_path, oracolo_path, radice != NULL
+
+  @result stampa a console l’esito e scrive log su file
 
 */
-static void test_abbonamento_valido() {
-    FILE* input = fopen(path_input_clienti, "r");
-    FILE* oracolo = fopen(path_oracolo_clienti, "r");
-    if (input == NULL) {
-        perror("Errore apertura file input");
-        exit(EXIT_FAILURE);
-    }
-    assert(input != NULL);
-    NodoAlbero* radice = NULL;
-
-    char codice_fiscale[MAX_CF];
-    fgets(codice_fiscale, sizeof(codice_fiscale), input);
-    codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
-
-    NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
-    if (nodo_trovato != NULL) {
-        char expected_result[16];
-        fgets(expected_result, sizeof(expected_result), oracolo);
-        expected_result[strcspn(expected_result, "\n")] = '\0';
-
-        bool abbonamento = abbonamento_valido(nodo_trovato->cliente);
-        if ((abbonamento && strcmp(expected_result, "1") == 0) ||
-            (!abbonamento && strcmp(expected_result, "0") == 0)) {
-            printf("Abbonamento valido==>ok\n");
-        } else {
-            printf("Abbonamento non valido==>fail\n");
-        }
-    } else {
-        printf("Cliente non trovato==>fail\n");
+static void esegui_test_cliente(
+    int test_num,
+    const char* input_path,
+    const char* esito_path,
+    const char* oracolo_path,
+    NodoAlbero** radice,
+    const char* messaggio_successo,
+    const char* messaggio_fallimento
+) {
+    FILE* file_input = fopen(input_path, "r");
+    if (file_input == NULL) {
+        stampa_fail(test_num, "file input aperto correttamente", "fallita apertura file input");
+        return;
     }
 
-    fclose(input);
-    fclose(oracolo);
-}
- /*
-
-  Esegue un test generico di eliminazione clienti leggendo input da file,
-  tentando di eliminare il cliente e confrontando l’output con un oracolo.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell'albero clienti
-    @return stampa esito del test e scrive log
-*/
-static void test_eliminazione_clienti() {                  
-    FILE* input = fopen(path_input_clienti, "r");
-    FILE* oracolo = fopen(path_oracolo_clienti, "r");
-    if (input == NULL) {
-        perror("Errore apertura file input");
-        exit(EXIT_FAILURE);
-    }
-    assert(input != NULL && oracolo != NULL);
-    NodoAlbero* radice = NULL;
-    int c = 0;
-
-    do {
-        char codice_fiscale[MAX_CF];
-        fgets(codice_fiscale, sizeof(codice_fiscale), input);
-        codice_fiscale[strcspn(codice_fiscale, "\n")] = '\0';
-        NodoAlbero* nodo_trovato = ricerca_cliente(radice, codice_fiscale);
-        if (nodo_trovato != NULL) {
-            radice = elimina_cliente(radice, nodo_trovato->cliente.codice_fiscale);
-            bool cliente_eliminato_su_file = salva_abbonamenti_su_file(radice, PATH_FILE_ABBONAMENTI);
-            char expected_result[16];
-            if (fgets(expected_result, sizeof(expected_result), oracolo) != NULL) {
-                expected_result[strcspn(expected_result, "\n")] = '\0';
-                if ((cliente_eliminato_su_file && strcmp(expected_result, "1") == 0) ||
-                    (!cliente_eliminato_su_file && strcmp(expected_result, "0") == 0)) {
-                    printf("TC eliminazione cliente==>ok\n");
-                } else {
-                    printf("TC eliminazione cliente==>fail\n");
-                }
+    char buffer[128];
+    char* campi[NUM_CAMPI_CLIENTE];
+    for (int i = 0; i < 5; i++) {
+        if (fgets(buffer, sizeof(buffer), file_input) == NULL) {
+            fclose(file_input);
+            scrivi_log(esito_path, messaggio_fallimento);
+            if (confronta_output(esito_path, oracolo_path)) {
+                stampa_ok(test_num);
             } else {
-                printf("Errore lettura oracolo\n");
+                stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
             }
-        } else {
-            printf("Cliente non trovato==>ok\n");
+            
+            return;
         }
-    } while (c < 2);
-    fclose(input);
-    fclose(oracolo);
-}
- /*
-
-  Esegue un test generico di visualizzazione clienti leggendo input da file,
-  tentando di visualizzare i clienti e confrontando l’output con un oracolo.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell'albero clienti
-    @return stampa esito del test e scrive log
-*/
-static void test_visualizzazione_clienti() {
-    FILE* input = fopen(path_input_clienti, "r");
-    if (input == NULL) {
-        perror("Errore apertura file input");
-        exit(EXIT_FAILURE);
+        buffer[strcspn(buffer, "\r\n")] = '\0';
+        campi[i] = duplica_stringa(buffer);
     }
-    assert(input != NULL);
-    NodoAlbero* radice = NULL;
 
-    printf("Visualizzazione clienti:\n");
-    visualizza_clienti(radice);
+    fclose(file_input);
 
-    fclose(input);
-}
- /*
-
-  Esegue un test generico di caricamento clienti da file,
-  tentando di caricare i clienti e verificando se la radice dell'albero non è NULL.
-    @param int test_num -> Numero identificativo del test (per stampa e log)
-    @param const char* input_path -> Percorso al file di input contenente i campi del test
-    @param const char* esito_path -> Percorso al file in cui scrivere l’esito del test
-    @param const char* oracolo_path -> Percorso al file oracolo con output atteso
-    @param NodoAlbero* radice -> Radice dell'albero clienti
-    @return stampa esito del test e scrive log
-*/
-static void test_caricamento_clienti() {
-    NodoAlbero* radice = NULL;
-    carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
-    if (radice != NULL) {
-        printf("TC caricamento clienti==>ok\n");
-    } else {
-        printf("TC caricamento clienti==>fail\n");
-    }
-}
-
-void test_clienti() {
-    printf("Inizio test gestione clienti...\n");
+    Cliente nuovo_cliente;
+    strncpy(nuovo_cliente.nome, campi[0], sizeof(nuovo_cliente.nome));
+    strncpy(nuovo_cliente.cognome, campi[1], sizeof(nuovo_cliente.cognome));
+    strncpy(nuovo_cliente.codice_fiscale, campi[2], sizeof(nuovo_cliente.codice_fiscale));
+    nuovo_cliente.durata = atoi(campi[3]);
+    strncpy(nuovo_cliente.data_nascita, campi[4], sizeof(nuovo_cliente.data_nascita));
+    nuovo_cliente.data_inizio = time(NULL);
     
-    test_inserimento_clienti();
-    test_ricerca_clienti();
-    test_abbonamento_valido();
-    test_visualizzazione_clienti();
-    test_caricamento_clienti();
-    test_eliminazione_clienti();
+    if (!abbonamento_valido(nuovo_cliente)){
+        
+        scrivi_log(esito_path, messaggio_fallimento);
+        if (confronta_output(esito_path, oracolo_path)) {
+            stampa_ok(test_num);
+        } else {
+            stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
+        }
+        for (int i = 0; i < NUM_CAMPI_CLIENTE; i++) {
+            free(campi[i]);
+        }
+        
+        return;
 
-    printf("Test gestione clienti completati.\n");
+    } 
+
+    bool successo = false;
+    NodoAlbero* cliente_trovato = ricerca_cliente(*radice, nuovo_cliente.codice_fiscale);
+    if(cliente_trovato == NULL){
+
+        NodoAlbero* nodo = inserisci_cliente(*radice, nuovo_cliente);
+        if (nodo != NULL) {
+            *radice = nodo;
+            successo = true;
+        }
+
+        if (successo) {
+            scrivi_log(esito_path, messaggio_successo);
+        } else {
+            scrivi_log(esito_path, messaggio_fallimento);
+        }
+
+        if (confronta_output(esito_path, oracolo_path)) {
+            stampa_ok(test_num);
+        } else {
+            stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
+        }
+
+
+        for (int i = 0; i < NUM_CAMPI_CLIENTE; i++) {
+            free(campi[i]);
+        }
+
+    } else{
+
+        scrivi_log(esito_path, messaggio_fallimento);
+        if (confronta_output(esito_path, oracolo_path)) {
+            stampa_ok(test_num);
+        } else {
+            stampa_fail(test_num, messaggio_successo, messaggio_fallimento);
+        }
+        
+        for (int i = 0; i < NUM_CAMPI_CLIENTE; i++) {
+            free(campi[i]);
+        }
+        
+    }
+    
+    
+}
+
+/*
+
+  Verifica l’inserimento corretto di un cliente con campi completi e validi.
+
+  - Legge i dati da file e verifica che l’inserimento avvenga con successo
+
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero clienti
+
+  -Pre: radice != NULL
+
+  @result stampa a console l’esito e scrive log su file
+
+*/
+static void test_cliente_valido(NodoAlbero** radice){
+
+    esegui_test_cliente(
+        1,
+        PATH_INPUT_CLIENTE_VALIDO,
+        PATH_ESITO_CLIENTE_VALIDO,
+        PATH_ORACOLO_CLIENTE_VALIDO,
+        radice,
+        "Cliente registrato correttamente",
+        "Inserimento cliente fallito"
+    );
+
+}
+
+/*
+
+  Verifica che un cliente con dati mancanti non venga inserito.
+
+  - Legge un blocco cliente incompleto e si attende fallimento dell'inserimento
+
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero clienti
+
+  -Pre: radice != NULL
+
+  @result stampa a console l’esito e scrive log su file
+
+*/
+static void test_cliente_dati_mancanti(NodoAlbero** radice){
+
+    esegui_test_cliente(
+        2,
+        PATH_INPUT_CLIENTE_DATI_MANCANTI,
+        PATH_ESITO_CLIENTE_DATI_MANCANTI,
+        PATH_ORACOLO_CLIENTE_DATI_MANCANTI,
+        radice,
+        "Cliente registrato correttamente",
+        "Campo mancante nel file input"
+    );
+}
+
+/*
+
+  Verifica che un cliente con durata abbonamento nulla o negativa venga rifiutato.
+
+  - Simula inserimento con durata invalida e verifica comportamento corretto
+
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero clienti
+
+  -Pre: radice != NULL
+
+  @result stampa a console l’esito e scrive log su file
+
+*/
+static void test_abbonamento_non_valido(NodoAlbero** radice) {
+
+    esegui_test_cliente(
+        3,
+        PATH_INPUT_CLIENTE_ABBONAMENTO_NON_VALIDO,
+        PATH_ESITO_CLIENTE_ABBONAMENTO_NON_VALIDO,
+        PATH_ORACOLO_CLIENTE_ABBONAMENTO_NON_VALIDO,
+        radice,
+        "Cliente registrato correttamente",
+        "Durata abbonamento non valido"
+    );
+}
+
+/*
+
+  Verifica che un cliente con codice fiscale già registrato non venga reinserito.
+
+  - Tenta un secondo inserimento con CF duplicato e si attende fallimento
+
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero clienti
+
+  -Pre: radice != NULL
+
+  @result stampa a console l’esito e scrive log su file
+
+*/
+static void test_cliente_duplicato(NodoAlbero** radice) {                  
+
+    esegui_test_cliente(
+        4,
+        PATH_INPUT_CLIENTE_DUPLICATO,
+        PATH_ESITO_CLIENTE_DUPLICATO,
+        PATH_ORACOLO_CLIENTE_DUPLICATO,
+        radice,
+        "Cliente registrato correttamente",
+        "Cliente già esistente"
+    );
+}
+
+/*
+
+  Avvia l’esecuzione di tutti i test relativi alla gestione dei clienti.
+
+  - Esegue in sequenza tutti i test richiamati al suo interno, validando i casi previsti
+
+  @param NodoAlbero** radice -> Puntatore alla radice dell’albero dei clienti
+
+  -Pre: radice != NULL
+
+  @result stampa a console l’esito di ciascun test e scrive log su file
+
+*/
+void avvia_test_clienti(NodoAlbero** radice) {
+
+    printf("\n--- TEST CLIENTI ---\n\n");
+
+    test_cliente_valido(radice);
+    test_cliente_dati_mancanti(radice);
+    test_abbonamento_non_valido(radice);
+    test_cliente_duplicato(radice);
+
 }

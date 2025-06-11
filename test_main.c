@@ -29,26 +29,39 @@
 
 */
 int main(void) {
-    printf("\n== AVVIO SUITE DI TEST ==\n");
+  printf("\n== AVVIO SUITE DI TEST ==\n");
 
-    Lista_Prenotazioni *lista = crea_lista_prenotazioni();
-    NodoAlbero* radice = NULL;
-    Catalogo_Lezioni *catalogo = carica_catalogo_da_file(PATH_FILE_LEZIONI);
+  Lista_Prenotazioni *lista = crea_lista_prenotazioni();
+  NodoAlbero* radice = NULL;
+  Catalogo_Lezioni *catalogo = carica_catalogo_da_file(PATH_FILE_LEZIONI);
 
-    carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
-    carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
+  int test_ok = 0;
+  int test_fail = 0;
+  int test_totali = 0;
 
-    printf("\n== INIZIO TEST PRENOTAZIONE ==\n");
-    avvia_test_prenotazioni(lista, radice, catalogo);
-    printf("\n== FINE TEST PRENOTAZIONE ==\n");
+  carica_prenotazioni_da_file(PATH_FILE_PRENOTAZIONI, lista);
+  carica_abbonamenti_da_file(PATH_FILE_ABBONAMENTI, &radice);
 
-    printf("\n== INIZIO TEST REPORT ==\n");
-    avvia_test_report(catalogo, lista);
-    printf("\n== FINE TEST REPORT ==\n");
+  printf("\n== INIZIO TEST CLIENTI ==\n");
+  avvia_test_clienti(&radice);
+  printf("\n== FINE TEST CLIENTI ==\n");
 
-    libera_lista_prenotazioni(lista);
-    elimina_catalogo(catalogo);
-    libera_clienti(radice);
+  printf("\n== INIZIO TEST PRENOTAZIONE ==\n");
+  avvia_test_prenotazioni(lista, radice, catalogo);
+  printf("\n== FINE TEST PRENOTAZIONE ==\n");
 
-    return 0;
+  printf("\n== INIZIO TEST REPORT ==\n");
+  avvia_test_report(catalogo, lista);
+  printf("\n== FINE TEST REPORT ==\n");
+
+  libera_lista_prenotazioni(lista);
+  elimina_catalogo(catalogo);
+  libera_clienti(radice);
+
+  printf("\n== RIEPILOGO FINALE ==\n");
+  printf("Totale test eseguiti: %d\n", test_totali);
+  printf("Test superati : %d\n", test_ok);
+  printf("Test falliti : %d\n", test_fail);
+  
+  return (test_fail > 0) ? 1 : 0;
 }

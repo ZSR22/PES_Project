@@ -16,12 +16,12 @@
 
 ##  test_clienti.c
 
-- [x] Implementare test: cliente valido
-- [x] Implementare test: cliente con dati mancanti
-- [x] Implementare test: abbonamento con durata zero
-- [x] Validare input con `valida_blocco()`
-- [x] Gestione output con `scrivi_log()` e confronto con oracolo
-- [ ] Stampa esito con colori in console
+- [X] Implementare test: cliente valido
+- [X] Implementare test: cliente con dati mancanti
+- [X] Implementare test: abbonamento con durata zero
+- [X] Validare input con `valida_blocco()`
+- [X] Gestione output con `scrivi_log()` e confronto con oracolo
+- [X] Stampa esito con colori in console
 
 ---
 
@@ -42,10 +42,10 @@
 
 ##  test_main.c
 
-- [ ] Eseguire: `test_clienti()`, `test_prenotazioni()`, `test_report()`
-- [ ] Contatori: `ok`, `fail`, `totali`
-- [ ] Stampare riepilogo finale dei test
-- [ ] Restituire `exit(1)` se `fail > 0`
+- [X] Eseguire: `test_clienti()`, `test_prenotazioni()`, `test_report()`
+- [X] Contatori: `ok`, `fail`, `totali`
+- [X] Stampare riepilogo finale dei test
+- [X] Restituire `exit(1)` se `fail > 0`
 
 ---
 
@@ -53,15 +53,14 @@
 
 - [X] Target `make test`: compila ed esegue la suite
 - [X] Target `make clean`: pulisce `.o`, `test_suite`
-- [ ] Eventuale clean avanzata per file temporanei
 
 ---
 
 ## input/ e oracolo/
 
-- [x] Creare file di input per test clienti
-- [x] Creare file oracolo corrispondente
-- [x] Idem per prenotazioni e report
+- [X] Creare file di input per test clienti
+- [X] Creare file oracolo corrispondente
+- [X] Idem per prenotazioni e report
 
 ---
 

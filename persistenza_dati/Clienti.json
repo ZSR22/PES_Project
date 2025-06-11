@@ -6,12 +6,4 @@
 		"data_inizio":	1749388941,
 		"durata":	0,
 		"id_abbonamento":	2022945916
-	}, {
-		"nome":	"mario",
-		"cognome":	"rossi",
-		"codice_fiscale":	"TNBBDV38P61L866B",
-		"data_nascita":	"16/07/2001",
-		"data_inizio":	1749388858,
-		"durata":	365,
-		"id_abbonamento":	1749405597
 	}]

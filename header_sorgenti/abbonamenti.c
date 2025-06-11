@@ -40,8 +40,6 @@ NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
     nuovo->cliente = c;
     nuovo->sx = NULL;
     nuovo->dx = NULL;
-    printf("===========================\n");
-    printf("Cliente %s %s è stato salvato con successo\n", c.nome, c.cognome);
     return nuovo;
 }
 
@@ -102,6 +100,7 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
  * @return 1 se l'abbonamento è valido, 0 altrimenti.
  */
 int abbonamento_valido(Cliente c) {
+    if (c.durata <= 0) return 0;
     time_t ora = time(NULL); // ottiene l'ora corrente
     int giorni_passati = difftime(ora, c.data_inizio)/ (60 * 60 * 24);// calcola i giorni passati dall'inizio dell'abbonamento con la differenza di tempo e la conversione in giorni
     if (giorni_passati < 0) {
