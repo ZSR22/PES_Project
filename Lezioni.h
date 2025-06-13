@@ -14,7 +14,7 @@
 #include "Utilities.h"
 
 #define MAX_NOME 50
-#define  CAPACITÀ_INIZIALE 4
+#define CAPACITÀ_INIZIALE 4
 
 // Struttura rappresentante una singola lezione
 typedef struct{

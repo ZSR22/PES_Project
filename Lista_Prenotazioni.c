@@ -394,6 +394,7 @@ bool lezione_prenotata(const Lista_Prenotazioni lista, const Lezione lezione){
     true se il codice fiscale rispetta i requisiti sintattici, false altrimenti
 */
 bool codice_fiscale_valido(const char* cf) {
+    
     if (!cf || strlen(cf) != 16) return false;
 
     for (int i = 0; i < 16; i++) {

@@ -32,7 +32,6 @@
  */
 NodoAlbero* crea_nodo(Cliente c) {
 NodoAlbero* nuovo = (NodoAlbero*)malloc(sizeof(NodoAlbero));
-    // controlla se l' allocazione è avvenuta con successo
     if (nuovo == NULL) {
         fprintf(stderr, "Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
@@ -66,10 +65,6 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
         NodoAlbero* nuovo = crea_nodo(c);
         return nuovo; 
     }
-    /*
-    abbiamo deciso di ordinare i clienti in base al codice fiscale perchè
-    univoco ed in questo modo non ci sono problemi di duplicati o di ordinamento
-    */
    int cmp = strcmp(c.codice_fiscale, radice->cliente.codice_fiscale);
     if (cmp < 0){
         radice->sx = inserisci_cliente(radice->sx, c);
@@ -101,13 +96,13 @@ NodoAlbero* inserisci_cliente(NodoAlbero* radice, Cliente c) {
  */
 int abbonamento_valido(Cliente c) {
     if (c.durata <= 0) return 0;
-    time_t ora = time(NULL); // ottiene l'ora corrente
-    int giorni_passati = difftime(ora, c.data_inizio)/ (60 * 60 * 24);// calcola i giorni passati dall'inizio dell'abbonamento con la differenza di tempo e la conversione in giorni
+    time_t ora = time(NULL); 
+    int giorni_passati = difftime(ora, c.data_inizio)/ (60 * 60 * 24);
     if (giorni_passati < 0) {
         fprintf(stderr, "Data di inizio non valida\n");
         return 0;
     }
-    return (giorni_passati <= c.durata) ? 1 : 0; // Se i giorni passati sono minori o uguali alla durata dell'abbonamento, è valido
+    return (giorni_passati <= c.durata) ? 1 : 0;
 }
 /**
  * Stampa i clienti in ordine crescente in base al codice fiscale.

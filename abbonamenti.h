@@ -24,9 +24,9 @@ typedef struct {
     char cognome[MAX_CHAR];
     char codice_fiscale[MAX_CF];
     char data_nascita[MAX_DN];
-    int durata; // la durata dell'abbonamento in giorni percio la facciamo con l' intero
-    time_t data_inizio; // la data di inizio dell'abbonamento
-    unsigned int id_abbonamento; // il numero dell'abbonamento
+    int durata; // la durata dell'abbonamento espressa in giorni
+    time_t data_inizio;
+    unsigned int id_abbonamento;
     } Cliente;
 typedef struct NodoAlbero {
     Cliente cliente;
