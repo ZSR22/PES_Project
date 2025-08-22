@@ -451,7 +451,7 @@ int main(){
           unsigned int id_cliente = nodo_cliente_trovato->cliente.id_abbonamento;
           radice = elimina_cliente(nodo_cliente_trovato, codice_fiscale);
           printf("Cliente eliminato\n");
-          elimina_cliente_da_persistenza(id_cliente);
+          elimina_da_persistenza(&descrittore_clienti, id_cliente);
           
           
         } else{
@@ -513,7 +513,7 @@ int main(){
             bool lezione_aggiornata = salva_lezioni_su_file(catalogo, PATH_FILE_LEZIONI);
             if(lezione_aggiornata){
 
-              elimina_prenotazione_da_persistenza(id_prenotazione_trovato);
+              elimina_da_persistenza(&descrittore_prenotazioni, id_prenotazione_trovato);
               printf("Prenotazione eliminata dalla persistenza\n");
 
             }
@@ -559,7 +559,7 @@ int main(){
           }
           elimina_lezione(catalogo, *lezione_trovata);
           printf("\n");
-          elimina_lezione_da_persistenza(id_lezione_trovato);
+          elimina_da_persistenza(&descrittore_lezioni, id_lezione_trovato);
           printf("\n");
           printf("Lezione eliminata con successo.\n");
 

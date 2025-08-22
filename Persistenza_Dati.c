@@ -542,40 +542,18 @@ bool report_esistente(Orario_Tm *orario)
   Elimina un elemento dal file JSON persistente in base all'ID specificato. 
   
 
-  @param char* tipo -> Il tipo passato come parametro sceglie il path del file persistente da modificare
-  @param int id
+  @param Descrittore* descrittore -> Struttura descrittore dichiarata globalmente, individuale per ogni elemento.
+  @param int id -> numero identificativo univoco dell'elemento da eliminare
 
   - Pre: Id valido
   @result se l'elemento esiste, viene rimosso dal file; altrimenti viene stampato un messaggio di errore
 */
-void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
+void elimina_da_persistenza(const Descrittore* descrittore, const unsigned int id)
 {
 
-    const char* path = NULL;
-    
-    // Stringa necessaria per garantire l'universalità tra le varie strutture del programma
-    const char* id_da_trovare = NULL;
-
-    if(strcmp(tipo, "cliente") == 0){
-        path = PATH_FILE_ABBONAMENTI;
-        id_da_trovare = ID_ABBONAMENTO_JSON;
-    }
-    else if(strcmp(tipo, "lezione") == 0){
-        path = PATH_FILE_LEZIONI;
-        id_da_trovare = ID_LEZIONE_JSON;
-    }
-    else if(strcmp(tipo, "prenotazione") == 0){
-        path = PATH_FILE_PRENOTAZIONI;
-        id_da_trovare = ID_PRENOTAZIONE_JSON;
-    }
-    else{
-        fprintf(stderr, "Tipo inserito non valido\n");
-        return;
-    }
-
-    FILE* file = fopen(path, "r");
+    FILE* file = fopen(descrittore->path, "r");
     if(!file){
-        fprintf(stderr, "Errore apertura file: %s\n", path);
+        fprintf(stderr, "Errore apertura file: %s\n", descrittore->path);
         return;
     }
 
@@ -599,7 +577,7 @@ void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
     int indice = 0;
     cJSON* item = NULL;
     cJSON_ArrayForEach(item, root){
-        cJSON* id_json = cJSON_GetObjectItem(item, id_da_trovare);
+        cJSON* id_json = cJSON_GetObjectItem(item, descrittore->id_elemento);
 
         if(id_json && cJSON_IsNumber(id_json) && (unsigned int)id_json->valueint == id){
 
@@ -612,7 +590,7 @@ void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
     }
 
     if(!elemento_trovato){
-        printf("%s con id: %u non trovato in persistenza\n", path, id);
+        printf("%s con id: %u non trovato in persistenza\n", descrittore->path, id);
         cJSON_Delete(root);
         return;
     }
@@ -620,9 +598,9 @@ void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
 
     char* contenuto_aggiornato = cJSON_Print(root);
 
-    file = fopen(path, "w");
+    file = fopen(descrittore->path, "w");
     if(!file){
-        fprintf(stderr, "Errore apertura file: %s\n", path);
+        fprintf(stderr, "Errore apertura file: %s\n", descrittore->path);
         return;
     }
 
@@ -631,5 +609,5 @@ void elimina_elem_da_persistenza(const char *tipo, const unsigned int id)
     free(contenuto_aggiornato);
     fclose(file);
 
-    printf("%s con id: %u, eliminato dalla persistenza", path, id);
+    printf("%s con id: %u, eliminato dalla persistenza", descrittore->path, id);
 }

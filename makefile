@@ -12,7 +12,7 @@ LDLIBS =
 
 # File sorgenti
 SRC = main.c abbonamenti.c Prenotazione.c Persistenza_Dati.c Lista_Prenotazioni.c Utilities.c Lezioni.c \
-      cjson/cJSON.c cjson/cJSON_Utils.c report.c
+      cjson/cJSON.c cjson/cJSON_Utils.c report.c Descrittore.c
 
 # File oggetto
 OBJ = $(SRC:.c=.o)

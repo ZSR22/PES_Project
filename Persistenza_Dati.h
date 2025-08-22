@@ -14,6 +14,7 @@
 #include "Lista_Prenotazioni.h"
 #include "Lezioni.h"
 #include "abbonamenti.h"
+#include "Descrittore.h"
 
 #define PATH_FILE_LEZIONI "persistenza_dati/Lezioni.json"
 #define PATH_FILE_PRENOTAZIONI "persistenza_dati/Prenotazioni.json"
@@ -22,8 +23,6 @@
 #define ID_ABBONAMENTO_JSON "id_abbonamento"
 #define ID_PRENOTAZIONE_JSON "id_prenotazione"
 #define ID_LEZIONE_JSON "id_lezione"
-
-
 
 Catalogo_Lezioni* carica_catalogo_da_file(const char* filepath);
 void carica_prenotazioni_da_file(const char* filepath, Lista_Prenotazioni* lista);
@@ -37,12 +36,9 @@ bool salva_abbonamenti_su_file(const NodoAlbero* nodo, const char* filepath);
 bool salva_report_su_file(const Catalogo_Lezioni* catalogo, const int* conteggi, int num_prenotazioni, const char* path, Orario_Tm* orario);
 bool report_esistente(Orario_Tm* orario);
 
-void elimina_elem_da_persistenza(const char* tipo, const unsigned int id);
+void elimina_da_persistenza(const Descrittore* descrittore, const unsigned int id);
 
-// Queste macro fungono da alias per la funzione elimina_elem_da_persistenza
-#define elimina_cliente_da_persistenza(id) elimina_elem_da_persistenza("cliente", (id))
-#define elimina_lezione_da_persistenza(id) elimina_elem_da_persistenza("lezione", (id))
-#define elimina_prenotazione_da_persistenza(id) elimina_elem_da_persistenza("prenotazione", (id))
+
 
 
 
