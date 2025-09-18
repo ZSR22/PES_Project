@@ -7,18 +7,18 @@ CC = gcc
 # Opzioni di compilazione
 CFLAGS = -Wall -Wextra -std=c11 -g
 
-# Librerie da collegare (vuoto perché linkiamo staticamente)
-LDLIBS =
+# Librerie da collegare
+LDLIBS = `pkg-config --libs gtk+-3.0`
 
 # File sorgenti
 SRC = main.c abbonamenti.c Prenotazione.c Persistenza_Dati.c Lista_Prenotazioni.c Utilities.c Lezioni.c \
-      cjson/cJSON.c cjson/cJSON_Utils.c report.c Descrittore.c
+      cjson/cJSON.c cjson/cJSON_Utils.c report.c Descrittore.c gui/Gui_Home.c console/Main_Console.c
 
 # File oggetto
 OBJ = $(SRC:.c=.o)
 
 # Includi directory per gli header file
-INC = -I. -Icjson
+INC = -I. -Icjson `pkg-config --cflags gtk+-3.0`
 
 # Nome eseguibile differenziato per sistema operativo
 ifeq ($(OS),Windows_NT)
@@ -46,6 +46,11 @@ clean:
 	$(RM) $(OBJ) $(EXEC)
 
 # Esecuzione del programma
-.PHONY: run
-run: all
-	./$(EXEC)    
+.PHONY: run-console
+run-console: all
+	./$(EXEC) --console
+
+# Esecuzione del programma(GUI)
+.PHONY: run-gui
+run-gui: all
+	./$(EXEC) --gui     
