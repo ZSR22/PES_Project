@@ -5,3 +5,10 @@
 *.o
 SGP
 archivio_report/*.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+._*
